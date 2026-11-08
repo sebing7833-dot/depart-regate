@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Le départ en régate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap">
+<style>
+/* Layout : aux couleurs de cvbs.fr (bleu marine, orange, Karla). Une frise (le temps), un mât (ce qu'on voit), une fiche (ce qu'on fait), un lexique (les règles). */
+:root{
+  --bg:#f4f5fa; --surface:#ffffff; --ink:#14152b; --muted:#555a75; --line:#d9dcea;
+  --navy:#000080; --navy-soft:#e6e8f6; --orange:#ff6633; --orange-ink:#c7410f; --orange-soft:#ffece4;
+  --ok:#1d7347; --ok-soft:#dff2e7; --bad:#b3261e; --bad-soft:#fbe3e1; --mast:#7a7f99;
+  --f:"Karla",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0a0b22; --surface:#13153a; --ink:#e8e9f6; --muted:#a2a6c6; --line:#262a5a;
+  --navy:#a4aaff; --navy-soft:#1c2060; --orange:#ff7a4d; --orange-ink:#ff9a75; --orange-soft:#3a1d14;
+  --ok:#5fd396; --ok-soft:#123323; --bad:#ff8a80; --bad-soft:#3b1716; --mast:#8c90b3; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0a0b22; --surface:#13153a; --ink:#e8e9f6; --muted:#a2a6c6; --line:#262a5a;
+  --navy:#a4aaff; --navy-soft:#1c2060; --orange:#ff7a4d; --orange-ink:#ff9a75; --orange-soft:#3a1d14;
+  --ok:#5fd396; --ok-soft:#123323; --bad:#ff8a80; --bad-soft:#3b1716; --mast:#8c90b3; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16.5px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(2.3rem,6.5vw,3.6rem);font-weight:800;color:var(--navy);letter-spacing:-.01em}
+h2{font-size:clamp(1.6rem,4vw,2.1rem);font-weight:800;color:var(--navy)}
+h3{font-size:1.35rem;font-weight:800}
+p{margin:0}
+a{color:var(--navy)}
+.eyebrow{font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--orange-ink)}
+.lead{color:var(--muted);max-width:64ch;font-size:1.05rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+
+/* ---------- En-tête ---------- */
+.band{background:var(--navy);color:#fff;border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px}
+.band img{width:42px;height:42px;border-radius:8px;object-fit:contain;background:#fff}
+.band span{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.9rem}
+.band a{margin-left:auto;color:#fff;font-size:.9rem;font-weight:600}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .band{background:var(--navy-soft)}}
+:root[data-theme="dark"] .band{background:var(--navy-soft)}
+.hero{display:grid;grid-template-columns:1fr minmax(260px,360px);gap:24px;align-items:end}
+.hero > *{min-width:0}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+.hero-text{display:flex;flex-direction:column;gap:10px}
+.modebox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.modebox > b{font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.mode{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--navy);border-radius:999px;padding:3px;gap:3px}
+.mode button{border:0;background:transparent;padding:8px 10px;border-radius:999px;font-weight:800;color:var(--navy)}
+.mode button[aria-pressed="true"]{background:var(--navy);color:var(--surface)}
+.mode-desc{font-size:.92rem;display:flex;flex-direction:column;gap:4px}
+.mode-desc li{margin-left:1.1em}
+.mode-desc ul{margin:0;padding:0}
+
+.golden{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--orange-soft);
+  border-left:6px solid var(--orange);padding:16px 18px;border-radius:0 var(--r) var(--r) 0}
+.golden strong{font-size:1.25rem;font-weight:800;display:block}
+.golden .big{font-size:2.6rem;font-weight:800;color:var(--orange);line-height:1}
+
+/* ---------- Mémo régatier ---------- */
+.memo{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.memo table{min-width:620px}
+
+/* ---------- Frise ---------- */
+section{display:flex;flex-direction:column;gap:18px}
+.hint{display:flex;align-items:center;gap:10px;font-size:.92rem;color:var(--muted)}
+.hint .tap{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:.85rem;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,102,51,.5)}50%{box-shadow:0 0 0 8px rgba(255,102,51,0)}}
+.timeline{overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.track{display:grid;grid-template-columns:repeat(7,minmax(118px,1fr));position:relative;min-width:830px}
+.track::before{content:"";position:absolute;left:4%;right:4%;top:31px;height:3px;background:var(--line)}
+.step{position:relative;border:0;background:transparent;padding:0 4px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.step .t{font-weight:800;font-size:1.05rem;background:var(--surface);border:2px solid var(--line);
+  border-radius:999px;padding:3px 12px;position:relative;z-index:1;min-width:70px;margin-top:16px;font-variant-numeric:tabular-nums;transition:transform .15s}
+.step .n{font-weight:700;font-size:.95rem;line-height:1.2}
+.step .s{font-size:.8rem;color:var(--muted)}
+.step:hover .t{border-color:var(--orange);transform:translateY(-2px)}
+.step.key .t{border-color:var(--navy)}
+.step[aria-current="true"] .t{background:var(--navy);border-color:var(--navy);color:var(--surface)}
+.step-flags{display:flex;gap:3px;height:16px}
+.step-flags img{height:16px;width:22px;object-fit:fill;border:1px solid var(--line);border-radius:2px}
+
+.stage{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.stage > *{min-width:0}
+@media (max-width:720px){.stage{grid-template-columns:1fr}}
+
+/* Mât */
+.mast{position:relative;min-height:300px;padding:14px 0 18px 30px;display:flex;flex-direction:column;justify-content:flex-start;gap:10px;
+  background:linear-gradient(var(--navy-soft),transparent 85%);border-radius:10px}
+.mast::before{content:"";position:absolute;left:18px;top:6px;bottom:6px;width:6px;border-radius:3px;background:var(--mast)}
+.mast::after{content:"";position:absolute;left:13px;top:0;width:16px;height:9px;border-radius:50%;background:var(--mast)}
+.mast .empty{color:var(--muted);font-style:italic;padding:8px 12px;font-size:.92rem}
+.flag{display:flex;align-items:center;gap:12px;animation:hoist .7s cubic-bezier(.2,.8,.2,1) both;text-decoration:none;color:inherit;border-radius:8px;padding:2px 6px 2px 0}
+a.flag:hover .lbl u{color:var(--orange-ink)}
+.flag img{width:96px;height:70px;object-fit:fill;border:1px solid var(--line);border-radius:2px;
+  box-shadow:0 2px 6px rgba(0,0,0,.12);transform-origin:left center;animation:wave 3.2s ease-in-out infinite;flex:none}
+.flag .lbl{font-size:.9rem;font-weight:800;line-height:1.25}
+.flag .lbl small{display:block;font-weight:400;color:var(--muted)}
+.flag .lbl u{display:block;font-weight:600;font-size:.78rem;color:var(--navy);text-decoration:underline}
+.flag.down{animation:lower .7s ease-in both}
+@keyframes hoist{from{transform:translateY(160px);opacity:0}to{transform:none;opacity:1}}
+@keyframes lower{from{transform:none;opacity:1}to{transform:translateY(120px);opacity:0}}
+@keyframes wave{0%,100%{transform:skewY(0)}50%{transform:skewY(-2deg) scaleX(.98)}}
+@media (prefers-reduced-motion:reduce){.flag,.flag img,.flag.down,.hint .tap{animation:none}.flag.down{opacity:.35}}
+
+.detail{display:flex;flex-direction:column;gap:14px}
+.detail .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.detail .clock{font-weight:800;font-size:2.4rem;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+.changes{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.88rem;font-weight:700}
+.chip.up{background:var(--ok-soft);color:var(--ok)}
+.chip.dn{background:var(--bad-soft);color:var(--bad)}
+.sound{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px}
+.pips{display:flex;gap:6px;align-items:center}
+.pip{display:block;height:12px;width:22px;border-radius:6px;background:var(--orange)}
+.pip.l{width:64px}
+.sound .txt{font-weight:700}
+.btn{border:2px solid var(--navy);background:transparent;color:var(--navy);border-radius:999px;padding:6px 14px;font-weight:800;display:inline-flex;gap:8px;align-items:center;text-decoration:none}
+.btn:hover{background:var(--navy-soft)}
+.btn.solid{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn.solid:hover{filter:brightness(1.06)}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.roles{grid-template-columns:1fr}}
+.role{background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.role b{text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;color:var(--muted)}
+.note{font-size:.94rem;padding:10px 12px;border-radius:10px}
+.note b{font-weight:800}
+.note.reg{background:var(--navy-soft)} .note.reg b{color:var(--navy)}
+.note.trap{background:var(--bad-soft)} .note.trap b{color:var(--bad)}
+.note.club{background:var(--orange-soft)} .note.club b{color:var(--orange-ink)}
+.rule{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:.85rem;padding:2px 9px;border-radius:999px;background:var(--navy-soft);color:var(--navy);text-decoration:none;white-space:nowrap}
+.rule:hover{text-decoration:underline}
+.rule::after{content:"↗";font-size:.8em}
+.nav-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* Mode */
+body.reg .only-deb{display:none!important}
+body:not(.reg) .only-reg{display:none!important}
+
+/* ---------- Incidents ---------- */
+.inc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.inc{border:1.5px solid var(--line);background:var(--surface);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.inc:hover{border-color:var(--orange)}
+.inc[aria-current="true"]{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy) inset}
+.inc .fl{display:flex;gap:4px;height:30px}
+.inc .fl img{height:30px;width:41px;object-fit:fill;border:1px solid var(--line);border-radius:2px}
+.inc b{font-size:1rem;line-height:1.2}
+.inc span{font-size:.82rem;color:var(--muted)}
+
+/* ---------- Tables ---------- */
+.prep-wrap{display:grid;grid-template-columns:1fr minmax(240px,320px);gap:20px;align-items:start}
+.prep-wrap > *{min-width:0}
+@media (max-width:820px){.prep-wrap{grid-template-columns:1fr}}
+.table-scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}
+th{text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;color:var(--muted);font-weight:700}
+tr:last-child td{border-bottom:0}
+td img{width:54px;height:39px;object-fit:fill;border:1px solid var(--line);border-radius:2px;display:block;margin-bottom:4px}
+.memo td img{width:34px;height:25px;display:inline-block;margin:0 3px 0 0;vertical-align:middle}
+.sev{display:inline-block;font-weight:700;padding:1px 8px;border-radius:999px;font-size:.82rem}
+.sev.s0{background:var(--ok-soft);color:var(--ok)} .sev.s1{background:var(--orange-soft);color:var(--orange-ink)} .sev.s2{background:var(--bad-soft);color:var(--bad)}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px}
+figcaption{font-size:.88rem;color:var(--muted)}
+figure svg{width:100%;height:auto}
+
+/* ---------- Lexique ---------- */
+.lex{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px;scroll-margin-top:20px;transition:box-shadow .3s}
+.card.flash{box-shadow:0 0 0 3px var(--orange)}
+.card .top{display:flex;gap:12px;align-items:center}
+.card img{width:72px;height:52px;object-fit:fill;border:1px solid var(--line);border-radius:2px;flex:none}
+.card h3{font-size:1.1rem}
+.card .snd{font-size:.86rem;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card .snd .pip{height:9px;width:16px}.card .snd .pip.l{width:44px}
+.card p{font-size:.93rem}
+.card .refs{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+
+/* ---------- Quiz ---------- */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:16px}
+.qbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.92rem;color:var(--muted)}
+.progress{flex:1;min-width:120px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--orange);transition:width .3s}
+.qvis{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.qvis img{height:62px;width:85px;object-fit:fill;border:1px solid var(--line);border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.qtext{font-size:1.2rem;font-weight:800;line-height:1.35}
+.answers{display:grid;gap:8px}
+.ans{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;text-align:left;font-size:1rem}
+.ans:hover:not(:disabled){border-color:var(--navy)}
+.ans:disabled{cursor:default}
+.ans.good{border-color:var(--ok);background:var(--ok-soft)}
+.ans.bad{border-color:var(--bad);background:var(--bad-soft)}
+.explain{padding:12px 14px;border-radius:10px;background:var(--navy-soft);font-size:.96rem}
+.explain b{color:var(--navy)}
+.result{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.result .score{font-size:3.4rem;font-weight:800;color:var(--navy);line-height:1}
+
+footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:20px">
+  <div class="band"><img src="images/logo.jpg" alt="Logo CVBS"><span>Comprendre la procédure de départ</span><a href="https://cvbs.fr/" target="_blank" rel="noopener">cvbs.fr</a></div>
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Le départ en régate</h1>
+      <p class="lead">Cinq minutes, quelques pavillons et des signaux sonores. Suis la frise, découvre ce qui se passe en cas de retard, de rappel ou d'annulation, retrouve la règle de chaque pavillon, puis teste-toi avec le quiz.</p>
+    </div>
+    <div class="modebox">
+      <b>Choisis ton niveau</b>
+      <div class="mode" role="group" aria-label="Niveau">
+        <button id="mDeb" aria-pressed="true">Débutant</button>
+        <button id="mReg" aria-pressed="false">Régatier</button>
+      </div>
+      <div class="mode-desc only-deb"><p><b>Débutant :</b> je découvre.</p><ul><li>Explications complètes à chaque étape</li><li>Ce que font le comité et le coureur</li><li>Quiz de 10 questions sur les bases</li></ul></div>
+      <div class="mode-desc only-reg"><p><b>Régatier :</b> je révise.</p><ul><li>Tableau mémo de toute la procédure</li><li>Fiches courtes : la règle et le piège à éviter</li><li>Quiz de 14 questions, avec les subtilités</li></ul></div>
+    </div>
+  </div>
+</header>
+
+<div class="golden">
+  <div class="big">!</div>
+  <div>
+    <strong>On compte avec le pavillon, pas avec le signal sonore</strong>
+    <p class="only-deb">Le signal sonore sert seulement à attirer ton regard vers le bateau comité. Le temps officiel part du moment où le pavillon monte ou descend. Si un signal sonore est raté ou en retard, c'est le pavillon qui compte.</p>
+    <p class="only-reg">Les temps sont pris à partir des signaux visuels ; l'absence d'un signal sonore ne doit pas être prise en compte. <a class="rule" href="https://arbitrage.ffvoile.fr/regles-et-documents/regles-de-course-a-la-voile/" target="_blank" rel="noopener">RCV 26</a></p>
+  </div>
+</div>
+
+<!-- ===================== FRISE ===================== -->
+<section id="frise" aria-labelledby="h-frise">
+  <div class="sec-head">
+    <p class="eyebrow">1 · La procédure normale</p>
+    <h2 id="h-frise">La frise du départ</h2>
+  </div>
+  <div class="memo only-reg"><table id="memoTable"></table></div>
+  <p class="hint"><span class="tap" aria-hidden="true">☝</span>Clique sur un moment de la frise (T-5, T-4, T-1…) pour voir les pavillons au mât et entendre le signal sonore. Clique sur un pavillon pour lire sa règle.</p>
+  <div class="timeline"><div class="track" id="track"></div></div>
+  <div class="stage">
+    <div class="mast" id="mast1" aria-live="polite"></div>
+    <div class="detail" id="detail1"></div>
+  </div>
+</section>
+
+<!-- ===================== INCIDENTS ===================== -->
+<section id="incidents" aria-labelledby="h-inc">
+  <div class="sec-head">
+    <p class="eyebrow">2 · Quand ça ne se passe pas comme prévu</p>
+    <h2 id="h-inc">Retards, rappels et annulations</h2>
+    <p class="lead only-deb">Le comité peut interrompre ou modifier la procédure à tout moment. Chaque situation a son pavillon et son nombre de signaux sonores.</p>
+  </div>
+  <p class="hint"><span class="tap" aria-hidden="true">☝</span>Clique sur une situation pour la voir au mât.</p>
+  <div class="inc-grid" id="incGrid"></div>
+  <div class="stage">
+    <div class="mast" id="mast2" aria-live="polite"></div>
+    <div class="detail" id="detail2"></div>
+  </div>
+</section>
+
+<!-- ===================== PRÉPARATOIRES ===================== -->
+<section id="prep" aria-labelledby="h-prep">
+  <div class="sec-head">
+    <p class="eyebrow">3 · La subtilité de T-4</p>
+    <h2 id="h-prep">P, I, U ou Noir : le pavillon préparatoire</h2>
+    <p class="lead only-deb">À T-4, le comité choisit un pavillon préparatoire. Au signal, ils se ressemblent tous, mais ils ne punissent pas de la même façon un bateau trop pressé pendant la dernière minute.</p>
+  </div>
+  <div class="prep-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Pavillon</th><th>Dans la dernière minute…</th><th>Sanction</th><th>Si rappel général</th></tr></thead>
+        <tbody>
+          <tr><td><img src="images/Pav_P.svg" alt="">P</td>
+            <td>Règles normales. Si tu es du mauvais côté de la ligne au départ, tu dois revenir entièrement côté pré-départ, par où tu veux.</td>
+            <td><span class="sev s0">Rappel individuel (X)</span><br><a class="rule" href="#pav-P">RCV 28 · 29.1</a></td>
+            <td>Tu prends le nouveau départ normalement.</td></tr>
+          <tr><td><img src="images/Pav_I.png" alt="">I</td>
+            <td>Si une partie de ta coque est au-dessus de la ligne <b>ou de ses prolongements</b> (côté parcours), tu dois revenir côté pré-départ <b>en contournant une extrémité</b> de la ligne (bouée ou bateau comité).</td>
+            <td><span class="sev s1">Retour par une extrémité</span><br><a class="rule" href="#pav-I">RCV 30.1</a></td>
+            <td>Tu prends le nouveau départ normalement.</td></tr>
+          <tr><td><img src="images/Pav_U.jpg" alt="">U</td>
+            <td>Interdit d'être dans le triangle. Si tu y es, inutile de revenir.</td>
+            <td><span class="sev s2">Disqualifié sans instruction (UFD)</span><br><a class="rule" href="#pav-U">RCV 30.3</a></td>
+            <td>La sanction tombe : tu <b>peux</b> courir le nouveau départ.</td></tr>
+          <tr><td><img src="images/Pav_noir.png" alt="">Noir</td>
+            <td>Interdit d'être dans le triangle. Ton numéro de voile sera affiché par le comité.</td>
+            <td><span class="sev s2">Disqualifié sans instruction (BFD)</span><br><a class="rule" href="#pav-noir">RCV 30.4</a></td>
+            <td>Tu restes disqualifié et tu <b>ne peux pas</b> courir le nouveau départ.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figure>
+      <svg viewBox="0 0 300 230" role="img" aria-label="Schéma du triangle entre la ligne de départ et la première marque">
+        <polygon points="40,190 260,190 150,40" fill="var(--orange-soft)" stroke="var(--orange)" stroke-width="2" stroke-dasharray="6 4"/>
+        <line x1="40" y1="190" x2="260" y2="190" stroke="var(--ink)" stroke-width="2.5"/>
+        <circle cx="150" cy="34" r="9" fill="var(--orange)"/>
+        <text x="150" y="16" text-anchor="middle" font-size="13" fill="var(--ink)" font-family="Karla, sans-serif">1re marque</text>
+        <circle cx="40" cy="190" r="8" fill="var(--orange)"/>
+        <rect x="246" y="180" width="34" height="18" rx="4" fill="var(--navy)"/>
+        <text x="40" y="215" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="Karla, sans-serif">bouée</text>
+        <text x="263" y="215" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="Karla, sans-serif">comité</text>
+        <text x="150" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="var(--orange-ink)" font-family="Karla, sans-serif">le triangle</text>
+        <text x="150" y="182" text-anchor="middle" font-size="12" fill="var(--ink)" font-family="Karla, sans-serif">ligne de départ</text>
+        <text x="150" y="228" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="Karla, sans-serif">↓ côté pré-départ (où tu dois être)</text>
+      </svg>
+      <figcaption>Le triangle compte pour U et Noir pendant la dernière minute (après l'affalée du préparatoire à T-1). Avec I, ce n'est pas le triangle qui compte, mais tout le côté parcours de la ligne et de ses prolongements.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== LEXIQUE ===================== -->
+<section id="pavillons" aria-labelledby="h-lex">
+  <div class="sec-head">
+    <p class="eyebrow">4 · Les pavillons et leurs règles</p>
+    <h2 id="h-lex">Chaque pavillon, sa règle</h2>
+    <p class="lead">Les numéros de règles renvoient aux Règles de Course à la Voile 2025-2028 (RCV), consultables en ligne sur le site d'arbitrage de la FFVoile. Les signaux comme l'aperçu, N, H, A, S ou le pavillon bleu sont décrits dans la partie « Signaux de course », au début du livre des règles.</p>
+  </div>
+  <div class="lex" id="lex"></div>
+</section>
+
+<!-- ===================== QUIZ ===================== -->
+<section id="quiz" aria-labelledby="h-quiz">
+  <div class="sec-head">
+    <p class="eyebrow">5 · À toi de jouer</p>
+    <h2 id="h-quiz">Le quiz « Tu es sur l'eau »</h2>
+    <p class="lead"><span class="only-deb">10 questions pour vérifier les bases.</span><span class="only-reg">14 questions, avec les subtilités des préparatoires et des rappels.</span> Certaines questions ont un signal sonore : monte le volume.</p>
+  </div>
+  <div class="quiz" id="quizBox"></div>
+</section>
+
+<footer>
+  <p>Contenu basé sur les Règles de Course à la Voile 2025-2028 (World Sailing, traduction FFVoile) et sur la procédure de l'application de départ du CVBS. En course, l'avis de course et les instructions de course priment toujours.</p>
+  <p>Texte officiel des règles : <a href="https://arbitrage.ffvoile.fr/regles-et-documents/regles-de-course-a-la-voile/" target="_blank" rel="noopener">arbitrage.ffvoile.fr · Règles de Course à la Voile</a></p>
+  <p>CVBS © 2026 · Pavillons et voix : application de départ du club, Sébastien RABAUD.</p>
+</footer>
+</div>
+
+<script>
+const RCV_URL = "https://arbitrage.ffvoile.fr/regles-et-documents/regles-de-course-a-la-voile/";
+// ===================== PAVILLONS =====================
+const F = {
+  orange:{src:"Pav_orange.svg",n:"Orange",d:"Ligne de départ ouverte",
+    mean:"Le comité est en place et la ligne de départ est ouverte. La procédure va commencer.",
+    snd:"1 signal sonore au hissage", p:["c"], refs:["Instructions de course"]},
+  classe:{src:"Pav_VNO.svg",n:"Pavillon de classe",d:"Signal d'avertissement",
+    mean:"Hissé à T-5 : signal d'avertissement de ta série. Affalé à T0 : c'est le départ.",
+    snd:"1 au hissage · 1 à l'affalée", p:["c"], refs:["RCV 26"]},
+  P:{src:"Pav_P.svg",n:"P",d:"Préparatoire",
+    mean:"Signal préparatoire standard, hissé à T-4 et affalé à T-1. Règles de départ normales.",
+    snd:"1 au hissage · 1 long à l'affalée", p:["c","l"], refs:["RCV 26"]},
+  I:{src:"Pav_I.png",n:"I",d:"Préparatoire, règle 30.1",
+    mean:"Dans la dernière minute, un bateau au-dessus de la ligne ou de ses prolongements doit revenir côté pré-départ en contournant une extrémité de la ligne.",
+    snd:"1 au hissage · 1 long à l'affalée", p:["c","l"], refs:["RCV 26","RCV 30.1"]},
+  U:{src:"Pav_U.jpg",n:"U",d:"Préparatoire, règle 30.3",
+    mean:"Dans la dernière minute, un bateau dans le triangle est disqualifié sans instruction (UFD), sauf si le départ est redonné.",
+    snd:"1 au hissage · 1 long à l'affalée", p:["c","l"], refs:["RCV 26","RCV 30.3"]},
+  noir:{src:"Pav_noir.png",n:"Noir",d:"Préparatoire, règle 30.4",
+    mean:"Dans la dernière minute, un bateau dans le triangle est disqualifié (BFD), même si le départ est redonné. Son numéro est affiché.",
+    snd:"1 au hissage · 1 long à l'affalée", p:["c","l"], refs:["RCV 26","RCV 30.4"]},
+  X:{src:"Pav_X.svg",n:"X",d:"Rappel individuel",
+    mean:"Un ou plusieurs bateaux étaient du mauvais côté de la ligne au départ et doivent revenir.",
+    snd:"1 au hissage", p:["c"], refs:["RCV 29.1","RCV 28"]},
+  sub1:{src:"1er_substitut.svg",n:"1er substitut",d:"Rappel général",
+    mean:"Le départ est annulé pour tous. Nouveau signal d'avertissement 1 minute après l'affalée.",
+    snd:"2 au hissage · 1 à l'affalée", p:["c","c"], refs:["RCV 29.2","Signaux de course"]},
+  ap:{src:"Pav_apercu.png",n:"Aperçu",d:"Retard",
+    mean:"Les courses pas encore parties sont retardées. Signal d'avertissement 1 minute après l'affalée.",
+    snd:"2 au hissage · 1 à l'affalée", p:["c","c"], refs:["Signaux de course"]},
+  N:{src:"Pav_N.svg",n:"N",d:"Annulation",
+    mean:"Les courses parties sont annulées : retour en zone de départ. Signal d'avertissement 1 minute après l'affalée.",
+    snd:"3 au hissage · 1 à l'affalée", p:["c","c","c"], refs:["Signaux de course","RCV 32"]},
+  H:{src:"Pav_H.png",n:"H",d:"Signaux à terre",
+    mean:"Avec l'aperçu ou N au-dessus : les prochains signaux seront faits à terre.",
+    snd:"Avec N : 3 · avec l'aperçu : 2", p:["c","c","c"], refs:["Signaux de course"]},
+  A:{src:"Pav_A.svg",n:"A",d:"Plus de course aujourd'hui",
+    mean:"Avec l'aperçu ou N au-dessus : plus de course aujourd'hui.",
+    snd:"Avec N : 3 · avec l'aperçu : 2", p:["c","c","c"], refs:["Signaux de course"]},
+  S:{src:"Pav_S.svg",n:"S",d:"Parcours réduit",
+    mean:"Le parcours est réduit : finis entre la marque la plus proche et le bateau comité.",
+    snd:"2 au hissage", p:["c","c"], refs:["Signaux de course","RCV 32"]},
+  bleu:{src:"Pav_bleu.svg",n:"Bleu",d:"Comité sur la ligne d'arrivée",
+    mean:"Le bateau comité est en position sur la ligne d'arrivée.",
+    snd:"Pas de signal sonore obligatoire", p:[], refs:["Signaux de course"]}
+};
+const img = k => "images/" + F[k].src;
+const ruleLink = r => `<a class="rule" href="${RCV_URL}" target="_blank" rel="noopener" title="Ouvrir les Règles de Course à la Voile (FFVoile)">${r}</a>`;
+
+// ===================== ÉTAPES =====================
+const STEPS = [
+  {id:"open", t:"≈ T-10", name:"Ligne ouverte", sub:"le comité est prêt",
+   flags:["orange"], up:["orange"], dn:[], snd:["c"], sndTxt:"1 signal sonore court",
+   what:"Le bateau comité hisse le pavillon orange : la ligne de départ est en place entre le bateau comité et une bouée. La procédure va bientôt commencer.",
+   comite:"Mouille la ligne, vérifie qu'elle est bien perpendiculaire au vent, hisse l'orange.",
+   coureur:"Rejoins la zone de départ, repère les deux extrémités de la ligne et prépare ta montre.",
+   reg:"Le pavillon orange n'est pas un signal des RCV : c'est une pratique FFVoile précisée dans les instructions de course, avec le délai avant le signal d'avertissement.", refs:["Instructions de course"],
+   trap:"L'orange n'est pas le signal d'avertissement : ton chrono ne démarre pas encore.",
+   club:"Au CVBS, le délai entre l'ouverture et le signal d'avertissement se règle dans l'application (1 min par défaut)."},
+  {id:"t5", t:"T-5", key:true, name:"Avertissement", sub:"5 minutes",
+   flags:["orange","classe"], up:["classe"], dn:[], snd:["c"], sndTxt:"1 signal sonore court",
+   what:"Le pavillon de ta classe monte : c'est le vrai début de la procédure. Il reste exactement 5 minutes avant le départ.",
+   comite:"Hisse le pavillon de classe et lance le chronomètre officiel.",
+   coureur:"Démarre ton chrono au moment où le pavillon monte, pas au signal sonore.",
+   reg:"Signal d'avertissement : pavillon de classe, 1 signal sonore, 5 min avant le départ.", refs:["RCV 26"],
+   trap:"Prendre le temps sur le signal sonore : de loin et sous le vent, il arrive en retard."},
+  {id:"t4", t:"T-4", key:true, name:"Préparatoire", sub:"4 minutes",
+   flags:["orange","classe","P"], up:["P"], dn:[], snd:["c"], sndTxt:"1 signal sonore court",
+   what:"Le pavillon préparatoire monte, le plus souvent P. Il reste 4 minutes. À partir de maintenant, tu es « en course » : les règles de priorité s'appliquent et tu peux être pénalisé.",
+   comite:"Hisse le préparatoire choisi : P, I, U ou Noir.",
+   coureur:"Regarde bien quel préparatoire est monté : il change ce qui t'arrive si tu es trop tôt sur la ligne (voir partie 3).",
+   reg:"Tu es « en course » dès le signal préparatoire (définition « En course »).", refs:["RCV 26","RCV 30"],
+   trap:"Ne pas regarder quel préparatoire est hissé. Avec U ou Noir, la dernière minute ne pardonne pas."},
+  {id:"t1", t:"T-1", key:true, name:"Dernière minute", sub:"1 minute",
+   flags:["orange","classe"], up:[], dn:["P"], snd:["l"], sndTxt:"1 signal sonore long",
+   what:"Le préparatoire descend avec un signal sonore long : c'est la dernière minute. Si I, U ou Noir était hissé, leurs règles s'appliquent maintenant.",
+   comite:"Affale le préparatoire avec un signal sonore long.",
+   coureur:"Place-toi pour ton départ, garde de la vitesse sous la main, surveille où est la ligne.",
+   reg:"Pendant cette minute, les règles des pavillons I, U et Noir s'appliquent.", refs:["RCV 26","RCV 30"],
+   trap:"Le signal long marque l'affalée du préparatoire, pas le départ."},
+  {id:"t0", t:"T0", key:true, name:"Départ !", sub:"0",
+   flags:["orange"], up:[], dn:["classe"], snd:["c"], sndTxt:"1 signal sonore court", countdown:true,
+   what:"Le pavillon de classe descend : c'est le départ. À cet instant, aucune partie de ton bateau ne doit avoir franchi la ligne. Ensuite, tu la franchis.",
+   comite:"Affale le pavillon de classe, note l'heure exacte du départ, repère les bateaux trop tôt.",
+   coureur:"Pars ! Puis jette un œil au comité : si le pavillon X monte, quelqu'un est parti trop tôt, et c'est peut-être toi.",
+   reg:"Prendre le départ : partir du côté pré-départ et franchir la ligne après le signal (définition « Prendre le départ »).", refs:["RCV 26","RCV 28"],
+   trap:"Ne pas regarder le comité après le départ. Si le X est hissé et que tu ne reviens pas, tu es classé OCS."},
+  {id:"close", t:"T+4", name:"Ligne fermée", sub:"fin des rappels",
+   flags:[], up:[], dn:["orange"], snd:[], sndTxt:"Pas de signal sonore",
+   what:"Le pavillon orange descend : la ligne de départ est fermée. Les rappels individuels sont terminés.",
+   comite:"Affale l'orange, et le X s'il était encore en haut.",
+   coureur:"Concentre-toi sur ta course. Un bateau qui n'est pas revenu sera classé OCS.",
+   reg:"Le X reste au maximum 4 min après le départ, ou jusqu'à 1 min avant un départ suivant si c'est plus tôt.", refs:["RCV 29.1"],
+   trap:"Revenir après la fermeture ne sert plus à rien : le classement OCS est acquis.",
+   club:"Au CVBS, l'application hisse le pavillon bleu à ce moment-là : le comité se prépare pour l'arrivée."},
+  {id:"finish", t:"Arrivée", name:"Ligne d'arrivée", sub:"temps limite",
+   flags:["bleu"], up:["bleu"], dn:[], snd:["c"], sndTxt:"1 signal sonore court par bateau (habitude)",
+   what:"Le pavillon bleu sur le bateau comité indique qu'il est en position sur la ligne d'arrivée. Tu termines en franchissant la ligne dans le sens du parcours.",
+   comite:"Note l'heure d'arrivée de chaque bateau. Le temps limite démarre souvent à l'arrivée du premier.",
+   coureur:"Franchis la ligne, puis dégage la zone pour ne pas gêner les suivants.",
+   reg:"Le signal sonore à chaque arrivée est une courtoisie, il n'est pas obligatoire. Le temps limite est fixé dans les instructions de course.", refs:["Signaux de course","Instructions de course"],
+   trap:"Toucher une marque de la ligne d'arrivée : il faut effectuer une pénalité avant de finir.",
+   club:"Au CVBS, le temps limite d'arrivée se règle dans l'application (20 min par défaut après le premier arrivé)."}
+];
+
+const INCIDENTS = [
+  {id:"ap", name:"Retard", sub:"Aperçu", flags:["orange","ap"], up:["ap"], dn:[],
+   snd:["c","c"], sndTxt:"2 signaux sonores au hissage", snd2:["c"], snd2Txt:"1 signal sonore à l'affalée",
+   what:"Le départ n'a pas encore été donné, et le comité le retarde : vent qui tombe, ligne à refaire, bouée qui chasse… Toute la procédure en cours est suspendue.",
+   comite:"Hisse l'aperçu (2 signaux sonores). Quand tout est prêt, l'affale (1 signal sonore).",
+   coureur:"Arrête ton chrono. Reste près de la zone de départ, et redémarre ton chrono au prochain signal d'avertissement.",
+   next:"Le signal d'avertissement (T-5) est fait 1 minute après l'affalée de l'aperçu.",
+   reg:"Sur H ou sur A, l'aperçu signifie « signaux à terre » ou « plus de course aujourd'hui ».", refs:["Signaux de course"],
+   trap:"Confondre l'aperçu (course pas encore partie, retardée) et N (course partie, annulée)."},
+  {id:"x", name:"Rappel individuel", sub:"X", flags:["orange","X"], up:["X"], dn:[],
+   snd:["c"], sndTxt:"1 signal sonore au hissage", snd2:[], snd2Txt:"Affalé sans signal sonore",
+   what:"Un ou plusieurs bateaux étaient du mauvais côté de la ligne au départ. Le comité ne dit pas lesquels : à chacun de le savoir.",
+   comite:"Hisse X immédiatement après le départ. L'affale quand tous les fautifs sont revenus, au plus tard 4 min après le départ.",
+   coureur:"Si tu étais trop tôt : reviens entièrement du côté pré-départ, puis reprends le départ. Pendant ton retour, tu dois t'écarter des bateaux qui partent normalement.",
+   next:"La course continue pour tous les autres.",
+   reg:"Bateau non revenu : OCS. Avec I : retour par une extrémité. Avec U ou Noir, revenir ne sert à rien : c'est une disqualification.", refs:["RCV 29.1","RCV 28","RCV 30"],
+   trap:"Attendre que le comité t'appelle : il n'est pas obligé de te héler."},
+  {id:"sub1", name:"Rappel général", sub:"1er substitut", flags:["orange","sub1"], up:["sub1"], dn:[],
+   snd:["c","c"], sndTxt:"2 signaux sonores au hissage", snd2:["c"], snd2Txt:"1 signal sonore à l'affalée",
+   what:"Trop de bateaux sont partis trop tôt, ou le comité ne peut pas les identifier. Le départ est annulé pour tout le monde et on recommence.",
+   comite:"Hisse le 1er substitut (2 signaux sonores), puis l'affale (1 signal sonore) quand la flotte est revenue.",
+   coureur:"Reviens vers la ligne. Tu n'as aucune pénalité, sauf si le pavillon noir était hissé et que ton numéro est affiché.",
+   next:"Nouveau signal d'avertissement 1 minute après l'affalée du 1er substitut, puis procédure complète de 5 min.",
+   reg:"Souvent, le comité passe au pavillon U ou Noir pour le départ suivant, pour calmer la flotte.", refs:["RCV 29.2"],
+   trap:"Croire que toutes les sanctions disparaissent : avec le Noir, un numéro affiché reste disqualifié."},
+  {id:"n", name:"Annulation", sub:"N", flags:["orange","N"], up:["N"], dn:[],
+   snd:["c","c","c"], sndTxt:"3 signaux sonores au hissage", snd2:["c"], snd2Txt:"1 signal sonore à l'affalée",
+   what:"La course qui a déjà démarré est annulée (vent tombé, parcours impossible…). Tout le monde revient en zone de départ pour une nouvelle course.",
+   comite:"Hisse N (3 signaux sonores). Quand la flotte est revenue, l'affale (1 signal sonore).",
+   coureur:"Arrête de courir, rejoins la zone de départ. La course ne compte pas.",
+   next:"Nouveau signal d'avertissement 1 minute après l'affalée du N.",
+   reg:"L'annulation concerne une course déjà partie ; le retard (aperçu) une course pas encore partie.", refs:["Signaux de course","RCV 32"],
+   trap:"Rester sur le parcours : la course ne compte plus, rejoins la zone de départ."},
+  {id:"nh", name:"Annulé, retour à terre", sub:"N sur H", flags:["N","H"], up:["N","H"], dn:["orange"],
+   snd:["c","c","c"], sndTxt:"3 signaux sonores", snd2:null,
+   what:"Toutes les courses sont annulées. Les prochaines informations seront données à terre.",
+   comite:"Hisse N au-dessus de H (3 signaux sonores).",
+   coureur:"Rentre au port et va voir le tableau officiel ou le mât de pavillons à terre.",
+   next:"Les signaux suivants seront faits à terre.",
+   reg:"Le pavillon du dessus se lit en premier : « N sur H ».", refs:["Signaux de course"],
+   trap:"Lire les pavillons dans le désordre : celui du dessus se lit en premier."},
+  {id:"na", name:"Fin de journée", sub:"N sur A", flags:["N","A"], up:["N","A"], dn:["orange"],
+   snd:["c","c","c"], sndTxt:"3 signaux sonores", snd2:null,
+   what:"Toutes les courses sont annulées et il n'y aura plus de course aujourd'hui.",
+   comite:"Hisse N au-dessus de A (3 signaux sonores).",
+   coureur:"Rentre au port. La journée est terminée.",
+   next:"Rien d'autre aujourd'hui.",
+   reg:"À ne pas confondre avec « aperçu sur A » : courses pas encore parties retardées, puis plus de course aujourd'hui.", refs:["Signaux de course"],
+   trap:"Confondre N sur A (courses annulées) et aperçu sur A (courses non parties, pas de course aujourd'hui)."},
+  {id:"s", name:"Parcours réduit", sub:"S", flags:["S"], up:["S"], dn:[],
+   snd:["c","c"], sndTxt:"2 signaux sonores", snd2:null,
+   what:"Le comité raccourcit le parcours, souvent parce que le vent faiblit ou que la course est trop longue.",
+   comite:"Se place à une marque ou sur une porte et hisse S (2 signaux sonores), avant le passage du premier bateau.",
+   coureur:"Finis entre la marque et le bateau comité qui porte le S : c'est ta nouvelle ligne d'arrivée.",
+   next:"L'arrivée se fait à cet endroit.",
+   reg:"Le parcours peut être réduit à une marque, une porte ou une ligne d'arrivée.", refs:["Signaux de course","RCV 32"],
+   trap:"Continuer jusqu'à la ligne d'arrivée habituelle alors que le S est hissé à une marque."}
+];
+
+// ===================== SIGNAUX SONORES =====================
+let ctx = null;
+function audio(){ if(!ctx){ try{ ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(ctx && ctx.state==="suspended") ctx.resume(); return ctx; }
+function horn(pattern){
+  const a = audio(); if(!a || !pattern || !pattern.length) return;
+  let t = a.currentTime + 0.05;
+  pattern.forEach(p => {
+    const d = p === "l" ? 1.6 : 0.55;
+    const g = a.createGain(), lp = a.createBiquadFilter();
+    lp.type = "lowpass"; lp.frequency.value = 1800;
+    [233, 349.5].forEach(f => { const o = a.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.connect(lp); o.start(t); o.stop(t + d + 0.05); });
+    lp.connect(g); g.connect(a.destination);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.18, t + 0.03);
+    g.gain.setValueAtTime(0.18, t + d - 0.06); g.gain.linearRampToValueAtTime(0, t + d);
+    t += d + 0.4;
+  });
+}
+const VOICES = ["dix","neuf","huit","sept","six","cinq","quatre","trois","deux","un"];
+let countdownRun = null;
+const CD_LABEL = "▶ Écouter les 10 dernières secondes";
+function playCountdown(btn){
+  if(countdownRun){ countdownRun.forEach(clearTimeout); countdownRun = null; btn.textContent = CD_LABEL; return; }
+  audio(); btn.textContent = "■ Arrêter"; countdownRun = [];
+  VOICES.forEach((v,i) => countdownRun.push(setTimeout(() => { const s = new Audio("voix/" + v + ".ogg"); s.play().catch(()=>{}); }, i*1000)));
+  countdownRun.push(setTimeout(() => { horn(["c"]); btn.textContent = CD_LABEL; countdownRun = null; }, 10000));
+}
+
+// ===================== RENDU COMMUN =====================
+function flagRow(k, mode){
+  const style = mode === "still" ? ' style="animation:none"' : "";
+  const cls = mode === "down" ? "flag down" : "flag";
+  const state = mode === "down" ? ` <span style="color:var(--bad);font-weight:400">· affalé</span>` : "";
+  return `<a class="${cls}"${style} href="#pav-${k}" data-pav="${k}"><img src="${img(k)}" alt="Pavillon ${F[k].n}"><span class="lbl">${F[k].n}${state}<small>${F[k].d}</small><u>Voir la règle</u></span></a>`;
+}
+function renderMast(el, item){
+  const keep = item.flags.filter(k => !item.up.includes(k));
+  let html = keep.map(k => flagRow(k, "still")).join("");
+  html += item.up.map(k => flagRow(k)).join("");
+  html += item.dn.map(k => flagRow(k, "down")).join("");
+  if(!item.flags.length) html += `<p class="empty">Plus aucun pavillon de départ</p>`;
+  el.innerHTML = html;
+}
+const pips = p => p.map(x => `<span class="pip${x==="l"?" l":""}"></span>`).join("");
+function soundBlock(p, txt, label){
+  if(!p || !p.length) return `<div class="sound"><span class="txt">${txt}</span></div>`;
+  return `<div class="sound"><span class="pips" aria-hidden="true">${pips(p)}</span><span class="txt">${txt}</span>
+    <button class="btn" data-horn="${p.join("")}">▶ ${label||"Écouter"}</button></div>`;
+}
+function chips(item){
+  let h = item.up.map(k => `<span class="chip up">▲ ${F[k].n} hissé</span>`).join("");
+  h += item.dn.map(k => `<span class="chip dn">▼ ${F[k].n} affalé</span>`).join("");
+  return h ? `<div class="changes">${h}</div>` : "";
+}
+const rolesBlock = item => `<div class="roles only-deb"><div class="role"><b>Le comité</b><p>${item.comite}</p></div><div class="role"><b>Toi, coureur</b><p>${item.coureur}</p></div></div>`;
+function notes(item){
+  let h = `<p class="note reg only-reg"><b>Règle · </b>${item.reg} ${item.refs.map(ruleLink).join(" ")}</p>`;
+  h += `<p class="note trap only-reg"><b>Piège · </b>${item.trap}</p>`;
+  h += `<p class="only-deb" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.9rem;color:var(--muted)">Règles : ${item.refs.map(ruleLink).join(" ")}</p>`;
+  if(item.club) h += `<p class="note club"><b>Au CVBS · </b>${item.club}</p>`;
+  return h;
+}
+
+// ===================== MÉMO RÉGATIER =====================
+document.getElementById("memoTable").innerHTML = `<thead><tr><th>Temps</th><th>Signal</th><th>Pavillons</th><th>Signal sonore</th><th>Règle</th></tr></thead><tbody>` +
+  STEPS.map(s => `<tr><td><b>${s.t}</b></td><td>${s.name}</td>
+    <td>${s.up.map(k=>`<img src="${img(k)}" alt="">▲ ${F[k].n}`).join(" ")}${s.dn.map(k=>`<img src="${img(k)}" alt="">▼ ${F[k].n}`).join(" ")}</td>
+    <td><span class="pips">${pips(s.snd)}</span> ${s.sndTxt.replace(" (habitude)","")}</td><td>${s.refs.map(ruleLink).join(" ")}</td></tr>`).join("") + `</tbody>`;
+
+// ===================== FRISE =====================
+const track = document.getElementById("track");
+track.innerHTML = STEPS.map((s,i) => `<button class="step${s.key?" key":""}" data-i="${i}" aria-label="${s.t} : ${s.name}">
+  <span class="t">${s.t}</span><span class="n">${s.name}</span><span class="s">${s.sub}</span>
+  <span class="step-flags">${s.flags.map(k=>`<img src="${img(k)}" alt="">`).join("")}</span></button>`).join("");
+let cur = 0;
+function showStep(i, withSound){
+  cur = i; const s = STEPS[i];
+  track.querySelectorAll(".step").forEach(b => b.setAttribute("aria-current", +b.dataset.i===i ? "true":"false"));
+  renderMast(document.getElementById("mast1"), s);
+  document.getElementById("detail1").innerHTML = `
+    <div class="head"><span class="clock">${s.t}</span><h3>${s.name}</h3></div>
+    ${chips(s)}
+    ${soundBlock(s.snd, s.sndTxt)}
+    <p class="only-deb">${s.what}</p>
+    ${rolesBlock(s)}
+    ${s.countdown ? `<div><button class="btn solid" id="cdBtn">${CD_LABEL}</button> <span class="only-deb" style="color:var(--muted);font-size:.9rem">avec la voix de l'application du club</span></div>` : ""}
+    ${notes(s)}
+    <div class="nav-row">
+      <button class="btn" data-nav="-1" ${i===0?"disabled style='visibility:hidden'":""}>← ${i>0?STEPS[i-1].t:""}</button>
+      <button class="btn" data-nav="1" ${i===STEPS.length-1?"disabled style='visibility:hidden'":""}>${i<STEPS.length-1?STEPS[i+1].t:""} →</button>
+    </div>`;
+  const cd = document.getElementById("cdBtn"); if(cd) cd.onclick = () => playCountdown(cd);
+  if(withSound) horn(s.snd);
+}
+track.addEventListener("click", e => { const b = e.target.closest(".step"); if(b) showStep(+b.dataset.i, true); });
+document.getElementById("detail1").addEventListener("click", e => {
+  const n = e.target.closest("[data-nav]"); if(!n) return;
+  const j = cur + +n.dataset.nav;
+  if(j>=0 && j<STEPS.length){ showStep(j, true); const tb = track.querySelector(`[data-i="${j}"]`); const tl = track.parentElement; tl.scrollTo({left: tb.offsetLeft - tl.clientWidth/2 + tb.offsetWidth/2, behavior:"smooth"}); }
+});
+
+// ===================== INCIDENTS =====================
+const grid = document.getElementById("incGrid");
+grid.innerHTML = INCIDENTS.map((s,i) => `<button class="inc" data-i="${i}">
+  <span class="fl">${s.up.map(k=>`<img src="${img(k)}" alt="">`).join("")}</span>
+  <b>${s.name}</b><span>${s.sub} · ${s.sndTxt}</span></button>`).join("");
+function showInc(i, withSound){
+  const s = INCIDENTS[i];
+  grid.querySelectorAll(".inc").forEach(b => b.setAttribute("aria-current", +b.dataset.i===i ? "true":"false"));
+  renderMast(document.getElementById("mast2"), s);
+  document.getElementById("detail2").innerHTML = `
+    <div class="head"><h3>${s.name}</h3><span class="eyebrow">${s.sub}</span></div>
+    ${chips(s)}
+    ${soundBlock(s.snd, s.sndTxt, "Hissage")}
+    ${s.snd2 != null ? soundBlock(s.snd2, s.snd2Txt, "Affalée") : ""}
+    <p class="only-deb">${s.what}</p>
+    ${rolesBlock(s)}
+    <p class="note reg only-deb"><b>Et ensuite · </b>${s.next}</p>
+    <p class="note reg only-reg"><b>Ensuite · </b>${s.next}</p>
+    ${notes(s)}`;
+  if(withSound) horn(s.snd);
+}
+grid.addEventListener("click", e => { const b = e.target.closest(".inc"); if(b) showInc(+b.dataset.i, true); });
+
+// ===================== LEXIQUE =====================
+document.getElementById("lex").innerHTML = Object.keys(F).map(k => { const f = F[k]; return `
+  <article class="card" id="pav-${k}">
+    <div class="top"><img src="${img(k)}" alt="Pavillon ${f.n}"><div><h3>${f.n}</h3><p style="color:var(--muted);font-size:.88rem">${f.d}</p></div></div>
+    <p>${f.mean}</p>
+    <div class="snd">${f.p.length ? `<span class="pips">${pips(f.p)}</span>` : ""}<span>${f.snd}</span>${f.p.length ? `<button class="btn" style="padding:2px 10px;font-size:.82rem" data-horn="${f.p.join("")}">▶</button>` : ""}</div>
+    <div class="refs">${f.refs.map(ruleLink).join("")}</div>
+  </article>`; }).join("");
+
+// ===================== CLICS GLOBAUX =====================
+document.addEventListener("click", e => {
+  const h = e.target.closest("[data-horn]"); if(h){ horn(h.dataset.horn.split("")); return; }
+  const a = e.target.closest('a[href^="#pav-"]');
+  if(a){
+    e.preventDefault();
+    const card = document.getElementById(a.getAttribute("href").slice(1));
+    if(card){ card.scrollIntoView({behavior:"smooth", block:"center"}); card.classList.add("flash"); setTimeout(() => card.classList.remove("flash"), 1800); }
+  }
+});
+
+// ===================== QUIZ =====================
+const Q = [
+  {lvl:0, flags:["orange"], q:"Le comité hisse ce pavillon avec un signal sonore. Qu'est-ce que ça veut dire ?",
+   a:["La ligne de départ est ouverte, la procédure va commencer","Le départ est donné","La course est retardée"], ok:0,
+   x:"Le pavillon orange indique que la ligne est en place. Le signal d'avertissement (T-5) suivra."},
+  {lvl:0, flags:["orange","classe"], snd:["c"], q:"Le pavillon de ta classe vient de monter. Combien de temps reste-t-il avant le départ ?",
+   a:["5 minutes","4 minutes","1 minute"], ok:0, x:"C'est le signal d'avertissement : T-5. Démarre ton chrono à la montée du pavillon."},
+  {lvl:0, flags:["orange","classe"], snd:["l"], q:"Le pavillon P descend et tu entends ce signal sonore long. Où en est-on ?",
+   a:["Il reste 1 minute","Le départ est donné","Rappel général"], ok:0, x:"Affalée du préparatoire avec un signal long : dernière minute (T-1)."},
+  {lvl:0, q:"Le comité hisse le pavillon de classe, mais le signal sonore ne fonctionne pas. Le signal compte-t-il ?",
+   a:["Oui, c'est le pavillon qui compte","Non, il faut recommencer la procédure","Seulement si l'arbitre le dit à la radio"], ok:0,
+   x:"Règle d'or : les temps sont pris sur les pavillons. Un signal sonore manquant ne change rien (RCV 26)."},
+  {lvl:0, q:"Quel moment marque exactement le départ ?",
+   a:["L'affalée du pavillon de classe","L'affalée du pavillon P","La montée du pavillon orange"], ok:0,
+   x:"T0 = le pavillon de classe descend (avec 1 signal sonore)."},
+  {lvl:0, flags:["orange","X"], snd:["c"], q:"Juste après le départ, ce pavillon monte avec un signal sonore. Tu étais un peu au-dessus de la ligne. Que fais-tu ?",
+   a:["Je reviens entièrement du côté pré-départ puis je repars","Je continue, le comité va me pénaliser de 2 tours","Je rentre au port"], ok:0,
+   x:"X = rappel individuel. Il faut revenir complètement derrière la ligne et reprendre le départ, sinon tu es classé OCS."},
+  {lvl:0, flags:["orange","sub1"], snd:["c","c"], q:"Ce pavillon monte avec deux signaux sonores juste après le départ. Que se passe-t-il ?",
+   a:["Rappel général : on recommence la procédure","Rappel individuel","Le parcours est réduit"], ok:0,
+   x:"1er substitut = rappel général. Nouveau signal d'avertissement 1 minute après son affalée."},
+  {lvl:0, flags:["orange","ap"], snd:["c","c"], q:"Avant le départ, ce pavillon monte avec deux signaux sonores. Que dois-tu faire ?",
+   a:["Arrêter mon chrono et attendre près de la ligne","Partir tout de suite","Rentrer au port"], ok:0,
+   x:"Aperçu = retard. La procédure reprend avec un signal d'avertissement 1 minute après son affalée."},
+  {lvl:0, flags:["N","A"], snd:["c","c","c"], q:"Tu vois ces deux pavillons l'un au-dessus de l'autre avec trois signaux sonores.",
+   a:["Courses annulées, plus de course aujourd'hui","Courses annulées, nouveau départ dans 1 minute","Courses retardées"], ok:0,
+   x:"N sur A : toutes les courses sont annulées et la journée est finie."},
+  {lvl:0, flags:["S"], snd:["c","c"], q:"En pleine course, le bateau comité arrive à une bouée et hisse ce pavillon.",
+   a:["Le parcours est réduit : l'arrivée se fait ici","Retour à terre","Rappel individuel"], ok:0,
+   x:"S = parcours réduit. Tu finis entre la marque et le bateau comité."},
+  {lvl:0, flags:["bleu"], q:"Le bateau comité porte ce pavillon bleu. Qu'est-ce que ça t'indique ?",
+   a:["Le comité est en position sur la ligne d'arrivée","Le départ est annulé","Il faut porter son gilet"], ok:0,
+   x:"Pavillon bleu = le comité est sur la ligne d'arrivée."},
+  {lvl:1, q:"À partir de quand es-tu « en course » et soumis aux règles de priorité ?",
+   a:["Au signal préparatoire (T-4)","Au signal d'avertissement (T-5)","Au départ (T0)"], ok:0,
+   x:"Définition « En course » : depuis le signal préparatoire jusqu'à l'arrivée."},
+  {lvl:1, flags:["I"], q:"Le préparatoire était I. Dans les 30 dernières secondes, ton étrave dépasse la ligne. Que dois-tu faire ?",
+   a:["Revenir côté pré-départ en contournant une extrémité de la ligne","Rien, je suis disqualifié","Juste repasser sous la ligne"], ok:0,
+   x:"RCV 30.1 : avec I, tu dois revenir par une extrémité (bouée ou bateau comité)."},
+  {lvl:1, flags:["U"], q:"Préparatoire U. Tu étais dans le triangle dans la dernière minute, puis il y a un rappel général. Peux-tu courir le nouveau départ ?",
+   a:["Oui, la sanction ne s'applique pas si le départ est redonné","Non, je suis disqualifié pour la course","Seulement avec un tour de pénalité"], ok:0,
+   x:"RCV 30.3 : UFD, mais pas si la course est redonnée ou recourue."},
+  {lvl:1, flags:["noir"], q:"Même situation avec le pavillon noir. Ton numéro est affiché. Peux-tu courir le nouveau départ ?",
+   a:["Non, je reste disqualifié et je ne prends pas ce départ","Oui, comme avec U","Oui, si je fais 2 tours"], ok:0,
+   x:"RCV 30.4 : BFD maintenu même après un rappel général ; tu ne dois pas courir le nouveau départ."},
+  {lvl:1, q:"Combien de temps, au maximum, le pavillon X peut-il rester hissé ?",
+   a:["4 minutes après le départ (ou 1 min avant un départ suivant si plus tôt)","Jusqu'à l'arrivée","45 secondes"], ok:0,
+   x:"RCV 29.1 : le X est affalé quand les fautifs sont revenus, au plus tard 4 min après le départ."}
+];
+const box = document.getElementById("quizBox");
+let qs = [], qi = 0, score = 0;
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+function startQuiz(){
+  const reg = document.body.classList.contains("reg");
+  const base = shuffle(Q.filter(q => q.lvl===0));
+  qs = reg ? shuffle(base.slice(0,9).concat(Q.filter(q => q.lvl===1))) : base.slice(0,10);
+  qs = qs.map(q => { const order = shuffle(q.a.map((t,i)=>i)); return {...q, a:order.map(i=>q.a[i]), ok:order.indexOf(q.ok)}; });
+  qi = 0; score = 0; renderQ();
+}
+function renderQ(){
+  if(qi >= qs.length) return renderEnd();
+  const q = qs[qi];
+  box.innerHTML = `
+    <div class="qbar"><span>Question ${qi+1} / ${qs.length}</span><div class="progress"><i style="width:${qi/qs.length*100}%"></i></div><span id="qscore">Score : ${score}</span></div>
+    ${(q.flags||q.snd) ? `<div class="qvis">${(q.flags||[]).map(k=>`<img src="${img(k)}" alt="Pavillon ${F[k].n}">`).join("")}
+      ${q.snd ? `<span class="pips" aria-hidden="true">${pips(q.snd)}</span><button class="btn" data-horn="${q.snd.join("")}">▶ Écouter le signal sonore</button>` : ""}</div>` : ""}
+    <p class="qtext">${q.q}</p>
+    <div class="answers">${q.a.map((t,i)=>`<button class="ans" data-a="${i}">${t}</button>`).join("")}</div>
+    <div id="after"></div>`;
+}
+function renderEnd(){
+  const pct = score/qs.length;
+  const msg = pct===1 ? "Parfait. Tu peux prendre la place du comité !" : pct>=.7 ? "Très bien. Repasse sur les points manqués et tu seras prêt." : "Pas encore ça. Refais un tour sur la frise et les incidents, puis réessaie.";
+  box.innerHTML = `<div class="result"><p class="eyebrow">Résultat</p><p class="score">${score} / ${qs.length}</p><p>${msg}</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn solid" id="again">Recommencer</button><a class="btn" href="#frise">Revoir la frise</a></div></div>`;
+  document.getElementById("again").onclick = startQuiz;
+}
+box.addEventListener("click", e => {
+  const b = e.target.closest(".ans"); if(!b || b.disabled) return;
+  const q = qs[qi], pick = +b.dataset.a, good = pick === q.ok;
+  if(good) score++;
+  box.querySelectorAll(".ans").forEach((x,i) => { x.disabled = true; if(i===q.ok) x.classList.add("good"); else if(i===pick) x.classList.add("bad"); });
+  document.getElementById("after").innerHTML = `<div style="display:flex;flex-direction:column;gap:12px">
+    <p class="explain"><b>${good ? "Bonne réponse. " : "Pas tout à fait. "}</b>${q.x}</p>
+    <div><button class="btn solid" id="nextQ">${qi===qs.length-1 ? "Voir mon score" : "Question suivante →"}</button></div></div>`;
+  document.getElementById("qscore").textContent = "Score : " + score;
+  document.getElementById("nextQ").onclick = () => { qi++; renderQ(); };
+});
+
+// ===================== MODE =====================
+function setMode(reg){
+  document.body.classList.toggle("reg", reg);
+  document.getElementById("mDeb").setAttribute("aria-pressed", String(!reg));
+  document.getElementById("mReg").setAttribute("aria-pressed", String(reg));
+  try{ localStorage.setItem("cvbs-mode", reg ? "reg" : "deb"); }catch(e){}
+  startQuiz();
+}
+document.getElementById("mDeb").onclick = () => setMode(false);
+document.getElementById("mReg").onclick = () => setMode(true);
+let saved = "deb"; try{ saved = localStorage.getItem("cvbs-mode") || "deb"; }catch(e){}
+
+showStep(1, false);
+showInc(2, false);
+setMode(saved === "reg");
+</script>
+
+</body>
+</html>
