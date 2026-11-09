@@ -50,7 +50,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .band a{margin-left:auto;color:#fff;font-size:.9rem;font-weight:600}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .band{background:var(--navy-soft)}}
 :root[data-theme="dark"] .band{background:var(--navy-soft)}
-.hero{display:grid;grid-template-columns:1fr minmax(260px,360px);gap:24px;align-items:end}
+.hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:end}
 .hero > *{min-width:0}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
 .hero-text{display:flex;flex-direction:column;gap:10px}
@@ -144,9 +144,6 @@ a.flag:hover .lbl u{color:var(--orange-ink)}
 .rule::after{content:"↗";font-size:.8em}
 .nav-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 
-/* Mode */
-body.reg .only-deb{display:none!important}
-body:not(.reg) .only-reg{display:none!important}
 
 /* ---------- Incidents ---------- */
 .inc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
@@ -220,15 +217,6 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
       <h1>Le départ en régate</h1>
       <p class="lead">Cinq minutes, quelques pavillons et des signaux sonores. Suis la frise, découvre ce qui se passe en cas de retard, de rappel ou d'annulation, retrouve la règle de chaque pavillon, puis teste-toi avec le quiz.</p>
     </div>
-    <div class="modebox">
-      <b>Choisis ton niveau</b>
-      <div class="mode" role="group" aria-label="Niveau">
-        <button id="mDeb" aria-pressed="true">Débutant</button>
-        <button id="mReg" aria-pressed="false">Régatier</button>
-      </div>
-      <div class="mode-desc only-deb"><p><b>Débutant :</b> je découvre.</p><ul><li>Explications complètes à chaque étape</li><li>Ce que font le comité et le coureur</li><li>Quiz de 10 questions sur les bases</li></ul></div>
-      <div class="mode-desc only-reg"><p><b>Régatier :</b> je révise.</p><ul><li>Tableau mémo de toute la procédure</li><li>Fiches courtes : la règle et le piège à éviter</li><li>Quiz de 14 questions, avec les subtilités</li></ul></div>
-    </div>
   </div>
 </header>
 
@@ -236,8 +224,7 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
   <div class="big">!</div>
   <div>
     <strong>On compte avec le pavillon, pas avec le signal sonore</strong>
-    <p class="only-deb">Le signal sonore sert seulement à attirer ton regard vers le bateau comité. Le temps officiel part du moment où le pavillon monte ou descend. Si un signal sonore est raté ou en retard, c'est le pavillon qui compte.</p>
-    <p class="only-reg">Les temps sont pris à partir des signaux visuels ; l'absence d'un signal sonore ne doit pas être prise en compte. <a class="rule" href="https://arbitrage.ffvoile.fr/regles-et-documents/regles-de-course-a-la-voile/" target="_blank" rel="noopener">RCV 26</a></p>
+    <p>Le signal sonore sert seulement à attirer ton regard vers le bateau comité. Le temps officiel part du moment où le pavillon monte ou descend. Si un signal sonore est raté ou en retard, c'est le pavillon qui compte. <a class="rule" href="https://arbitrage.ffvoile.fr/regles-et-documents/regles-de-course-a-la-voile/" target="_blank" rel="noopener">RCV 26</a></p>
   </div>
 </div>
 
@@ -247,7 +234,8 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
     <p class="eyebrow">1 · La procédure normale</p>
     <h2 id="h-frise">La frise du départ</h2>
   </div>
-  <div class="memo only-reg"><table id="memoTable"></table></div>
+  <h3>Le mémo en un coup d'œil</h3>
+  <div class="memo"><table id="memoTable"></table></div>
   <p class="hint"><span class="tap" aria-hidden="true">☝</span>Clique sur un moment de la frise (T-5, T-4, T-1…) pour voir les pavillons au mât et entendre le signal sonore. Clique sur un pavillon pour lire sa règle.</p>
   <div class="timeline"><div class="track" id="track"></div></div>
   <div class="stage">
@@ -336,7 +324,7 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
   <div class="sec-head">
     <p class="eyebrow">5 · À toi de jouer</p>
     <h2 id="h-quiz">Le quiz « Tu es sur l'eau »</h2>
-    <p class="lead"><span class="only-deb">10 questions pour vérifier les bases.</span><span class="only-reg">14 questions, avec les subtilités des préparatoires et des rappels.</span> Certaines questions ont un signal sonore : monte le volume.</p>
+    <p class="lead">16 questions, des bases jusqu'aux subtilités des préparatoires et des rappels. Certaines questions ont un signal sonore : monte le volume.</p>
   </div>
   <div class="quiz" id="quizBox"></div>
 </section>
@@ -344,7 +332,7 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
 <footer>
   <p>Contenu basé sur les Règles de Course à la Voile 2025-2028 (World Sailing, traduction FFVoile) et sur la procédure de l'application de départ du CVBS. En course, l'avis de course et les instructions de course priment toujours.</p>
   <p>Texte officiel des règles : <a href="https://arbitrage.ffvoile.fr/regles-et-documents/regles-de-course-a-la-voile/" target="_blank" rel="noopener">arbitrage.ffvoile.fr · Règles de Course à la Voile</a></p>
-  <p>CVBS © 2026 · Pavillons et voix : application de départ du club, Sébastien RABAUD.</p>
+  <p>CVBS © 2026 · Comprendre la procédure de départ, Sébastien RABAUD</p>
 </footer>
 </div>
 
@@ -570,7 +558,6 @@ const rolesBlock = item => `<div class="roles only-deb"><div class="role"><b>Le 
 function notes(item){
   let h = `<p class="note reg only-reg"><b>Règle · </b>${item.reg} ${item.refs.map(ruleLink).join(" ")}</p>`;
   h += `<p class="note trap only-reg"><b>Piège · </b>${item.trap}</p>`;
-  h += `<p class="only-deb" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.9rem;color:var(--muted)">Règles : ${item.refs.map(ruleLink).join(" ")}</p>`;
   if(item.club) h += `<p class="note club"><b>Au CVBS · </b>${item.club}</p>`;
   return h;
 }
@@ -629,8 +616,7 @@ function showInc(i, withSound){
     ${s.snd2 != null ? soundBlock(s.snd2, s.snd2Txt, "Affalée") : ""}
     <p class="only-deb">${s.what}</p>
     ${rolesBlock(s)}
-    <p class="note reg only-deb"><b>Et ensuite · </b>${s.next}</p>
-    <p class="note reg only-reg"><b>Ensuite · </b>${s.next}</p>
+    <p class="note reg"><b>Et ensuite · </b>${s.next}</p>
     ${notes(s)}`;
   if(withSound) horn(s.snd);
 }
@@ -709,9 +695,7 @@ const box = document.getElementById("quizBox");
 let qs = [], qi = 0, score = 0;
 const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
 function startQuiz(){
-  const reg = document.body.classList.contains("reg");
-  const base = shuffle(Q.filter(q => q.lvl===0));
-  qs = reg ? shuffle(base.slice(0,9).concat(Q.filter(q => q.lvl===1))) : base.slice(0,10);
+  qs = shuffle(Q.filter(q => q.lvl===0)).concat(shuffle(Q.filter(q => q.lvl===1)));
   qs = qs.map(q => { const order = shuffle(q.a.map((t,i)=>i)); return {...q, a:order.map(i=>q.a[i]), ok:order.indexOf(q.ok)}; });
   qi = 0; score = 0; renderQ();
 }
@@ -745,21 +729,9 @@ box.addEventListener("click", e => {
   document.getElementById("nextQ").onclick = () => { qi++; renderQ(); };
 });
 
-// ===================== MODE =====================
-function setMode(reg){
-  document.body.classList.toggle("reg", reg);
-  document.getElementById("mDeb").setAttribute("aria-pressed", String(!reg));
-  document.getElementById("mReg").setAttribute("aria-pressed", String(reg));
-  try{ localStorage.setItem("cvbs-mode", reg ? "reg" : "deb"); }catch(e){}
-  startQuiz();
-}
-document.getElementById("mDeb").onclick = () => setMode(false);
-document.getElementById("mReg").onclick = () => setMode(true);
-let saved = "deb"; try{ saved = localStorage.getItem("cvbs-mode") || "deb"; }catch(e){}
-
 showStep(1, false);
 showInc(2, false);
-setMode(saved === "reg");
+startQuiz();
 </script>
 
 </body>
