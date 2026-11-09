@@ -4,9 +4,8 @@
   LE DÉPART EN RÉGATE — Page pédagogique du CVBS
   =============================================================================
   Page 100 % statique : un seul fichier HTML (structure + style + script),
-  plus trois dossiers à côté :
+  plus deux dossiers à côté :
     images/  → les pavillons et le logo
-    voix/    → les fichiers audio du décompte « dix… un » (.ogg)
     fonts/   → la police Karla (licence libre SIL OFL), hébergée avec la page
 
   Pas de serveur, pas de base de données, pas de cookie, aucune donnée
@@ -44,7 +43,7 @@
      ⚠ Si on ajoute un compteur de visites (GoatCounter…), il faudra autoriser son
        adresse dans script-src et connect-src. -->
 <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'none'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
 
 <title>Le départ en régate</title>
 
@@ -226,7 +225,6 @@ a.flag:hover .lbl u{color:var(--orange-ink)}
 .note.reg{background:var(--navy-soft)} .note.reg b{color:var(--navy)}
 .note.trap{background:var(--bad-soft)} .note.trap b{color:var(--bad)}
 .note.club{background:var(--orange-soft)} .note.club b{color:var(--orange-ink)}
-.cd-note{color:var(--muted);font-size:.9rem}
 
 /* Étiquette de règle cliquable (RCV 26 ↗) */
 .rule{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:.85rem;padding:2px 9px;border-radius:999px;background:var(--navy-soft);color:var(--navy);text-decoration:none;white-space:nowrap}
@@ -539,8 +537,7 @@ const F = {
      snd     : signaux à jouer ("c" court, "l" long) — sndTxt : en texte
      what    : explication           comite / coureur : qui fait quoi
      reg     : encadré « Règle »      refs : étiquettes de règles
-     trap    : encadré « Piège »      club : encadré « Au CVBS » (facultatif)
-     countdown : true = affiche le bouton du décompte vocal (étape T0) */
+     trap    : encadré « Piège »      club : encadré « Au CVBS » (facultatif) */
 const STEPS = [
   {id:"open", t:"≈ T-10", name:"Ligne ouverte", sub:"le comité est prêt",
    flags:["orange"], up:["orange"], dn:[], snd:["c"], sndTxt:"1 signal sonore court",
@@ -572,7 +569,7 @@ const STEPS = [
    reg:"Pendant cette minute, les règles des pavillons I, U et Noir s'appliquent.", refs:["RCV 26","RCV 30"],
    trap:"Le signal long marque l'affalée du préparatoire, pas le départ."},
   {id:"t0", t:"T0", key:true, name:"Départ !", sub:"0",
-   flags:["orange"], up:[], dn:["classe"], snd:["c"], sndTxt:"1 signal sonore court", countdown:true,
+   flags:["orange"], up:[], dn:["classe"], snd:["c"], sndTxt:"1 signal sonore court",
    what:"Le pavillon de classe descend : c'est le départ. À cet instant, aucune partie de ton bateau ne doit avoir franchi la ligne. Ensuite, tu la franchis.",
    comite:"Affale le pavillon de classe, note l'heure exacte du départ, repère les bateaux trop tôt.",
    coureur:"Pars ! Puis jette un œil au comité : si le pavillon X monte, quelqu'un est parti trop tôt, et c'est peut-être toi.",
@@ -808,35 +805,7 @@ function horn(pattern){
 }
 
 
-/* ---------- B3. Le décompte vocal (étape T0) ----------
-   Joue « dix, neuf… un » (fichiers voix/*.ogg de l'application du club),
-   une voix par seconde, puis le signal de départ. */
-const VOICES = ["dix","neuf","huit","sept","six","cinq","quatre","trois","deux","un"];
-const CD_LABEL = "▶ Écouter les 10 dernières secondes";
-let countdownTimers = null;  // les minuteries en cours (null = pas de décompte)
-
-// Arrête le décompte s'il tourne
-function stopCountdown(){
-  if (!countdownTimers) return;
-  countdownTimers.forEach(clearTimeout);
-  countdownTimers = null;
-  const btn = document.getElementById("cdBtn");
-  if (btn) btn.textContent = CD_LABEL;
-}
-
-// Bouton « Écouter / Arrêter »
-function toggleCountdown(btn){
-  if (countdownTimers) { stopCountdown(); return; }
-  audio();
-  btn.textContent = "■ Arrêter";
-  countdownTimers = VOICES.map((v, i) => setTimeout(() => {
-    new Audio("voix/" + v + ".ogg").play().catch(() => {}); // .catch : si le format n'est pas lu (vieux iPhone), on ignore
-  }, i * 1000));
-  countdownTimers.push(setTimeout(() => { horn(["c"]); stopCountdown(); }, 10000));
-}
-
-
-/* ---------- B4. Fonctions d'affichage communes (frise + incidents) ---------- */
+/* ---------- B3. Fonctions d'affichage communes (frise + incidents) ---------- */
 
 // Un pavillon sur le mât. mode = "up" (monte), "still" (déjà là), "down" (descend).
 // C'est un lien vers la carte du pavillon dans le lexique (#pav-cle).
@@ -858,7 +827,7 @@ function renderMast(el, item){
 }
 
 // Bloc « signal sonore » avec son bouton d'écoute.
-// Le bouton porte data-horn="cc" : il est géré par l'écouteur global (B8).
+// Le bouton porte data-horn="cc" : il est géré par l'écouteur global (B7).
 function soundBlock(p, txt, label){
   if (!p || !p.length) return `<div class="sound"><span class="txt">${txt}</span></div>`;
   return `<div class="sound"><span class="pips" aria-hidden="true">${pips(p)}</span><span class="txt">${txt}</span>
@@ -889,7 +858,7 @@ function markCurrent(container, selector, i){
 }
 
 
-/* ---------- B5. Section 1 : le mémo et la frise ---------- */
+/* ---------- B4. Section 1 : le mémo et la frise ---------- */
 
 // Tableau mémo, construit une seule fois à partir de STEPS
 document.getElementById("memoTable").innerHTML =
@@ -909,7 +878,6 @@ let currentStep = 0; // étape affichée
 
 // Affiche l'étape i : mât + fiche. withSound = jouer le signal (false au chargement).
 function showStep(i, withSound){
-  stopCountdown();   // si on quitte T0 pendant le décompte, on l'arrête
   currentStep = i;
   const s = STEPS[i];
   markCurrent(track, ".step", i);
@@ -921,7 +889,6 @@ function showStep(i, withSound){
     ${soundBlock(s.snd, s.sndTxt)}
     <p>${s.what}</p>
     ${rolesBlock(s)}
-    ${s.countdown ? `<div><button class="btn solid" id="cdBtn">${CD_LABEL}</button> <span class="cd-note">avec la voix de l'application du club</span></div>` : ""}
     ${notes(s)}
     <div class="nav-row">
       <button class="btn" data-nav="-1" ${prev ? "" : "disabled"}>← ${prev ? prev.t : ""}</button>
@@ -944,9 +911,8 @@ track.addEventListener("click", e => {
   if (b) showStep(+b.dataset.i, true);
 });
 
-// Boutons de la fiche : précédent / suivant et décompte vocal
+// Boutons de la fiche : étape précédente / suivante
 document.getElementById("detail1").addEventListener("click", e => {
-  if (e.target.closest("#cdBtn")) { toggleCountdown(e.target.closest("#cdBtn")); return; }
   const n = e.target.closest("[data-nav]");
   if (!n) return;
   const j = currentStep + Number(n.dataset.nav);
@@ -954,7 +920,7 @@ document.getElementById("detail1").addEventListener("click", e => {
 });
 
 
-/* ---------- B6. Section 2 : les incidents ---------- */
+/* ---------- B5. Section 2 : les incidents ---------- */
 
 const grid = document.getElementById("incGrid");
 grid.innerHTML = INCIDENTS.map((s, i) => `<button class="inc" data-i="${i}">
@@ -984,7 +950,7 @@ grid.addEventListener("click", e => {
 });
 
 
-/* ---------- B7. Section 4 : le lexique ----------
+/* ---------- B6. Section 4 : le lexique ----------
    Une carte par pavillon de la liste F. id="pav-cle" permet d'y accéder
    depuis les liens href="#pav-cle" (mât, tableau des préparatoires). */
 document.getElementById("lex").innerHTML = Object.entries(F).map(([k, f]) => `
@@ -996,7 +962,7 @@ document.getElementById("lex").innerHTML = Object.entries(F).map(([k, f]) => `
   </article>`).join("");
 
 
-/* ---------- B8. Clics communs à toute la page ----------
+/* ---------- B7. Clics communs à toute la page ----------
    - tout bouton data-horn="cc" joue le signal correspondant ;
    - tout lien #pav-cle fait défiler jusqu'à la carte du pavillon et la
      fait briller 1,8 s. */
@@ -1016,7 +982,7 @@ document.addEventListener("click", e => {
 });
 
 
-/* ---------- B9. Section 5 : le quiz ----------
+/* ---------- B8. Section 5 : le quiz ----------
    Déroulement : startQuiz → renderQ (une question) → clic sur une réponse
    (correction + explication) → « Question suivante » → … → renderEnd (score). */
 const box = document.getElementById("quizBox");
@@ -1087,7 +1053,7 @@ box.addEventListener("click", e => {
 });
 
 
-/* ---------- B10. Démarrage ----------
+/* ---------- B9. Démarrage ----------
    État affiché à l'ouverture : T-5 dans la frise, rappel général dans les
    incidents, première question du quiz. Sans son (le navigateur l'interdit
    avant un clic). */
