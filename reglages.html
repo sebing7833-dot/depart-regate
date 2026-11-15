@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<!--
+  =============================================================================
+  LES RÉGLAGES EN NAVIGATION — Page pédagogique du CVBS
+  =============================================================================
+  Page sœur de index.html (« Le départ en régate »). Même principe :
+  un seul fichier HTML statique, qui réutilise les dossiers images/ et fonts/.
+
+  Sujet : les réglages DYNAMIQUES d'un quillard de sport à deux (barreur +
+  équipier) comme le Vent d'Ouest ou le F15 : tout ce qui se règle en
+  naviguant. Les réglages faits à terre (mât, haubans) ne sont pas traités.
+
+  Tout le contenu s'adresse à tout le monde, sans distinction de niveau :
+    - encadrés verts « À retenir »   → le résumé du chapitre
+    - encadrés « En détail »         → les finesses de réglage
+    - les mots techniques sont reliés automatiquement au lexique (fin de page)
+  Contexte : régates sur la Seine (eau plate, pas de houle).
+
+  ORGANISATION DU FICHIER
+    1. <head>    : réglages de la page, sécurité, police
+    2. <style>   : l'apparence
+    3. <body>    : sommaire + 11 chapitres
+    4. <script>  : les DONNÉES (lexique, commandes, tableau, symptômes, quiz)
+                   puis le FONCTIONNEMENT (dessins, simulateurs, quiz)
+
+  POUR MODIFIER UN TEXTE → aller dans le <script>, listes GL, CMD, MAT, SYMPT
+  ou Q. Ne jamais mettre de guillemet droit " dans un texte (utiliser « » ou ').
+  =============================================================================
+-->
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Phase de test : à SUPPRIMER quand la page sera publiée officiellement -->
+<meta name="robots" content="noindex">
+
+<!-- SÉCURITÉ — même politique que index.html : la page ne charge que ses propres fichiers -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'none'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+
+<title>Les réglages en navigation</title>
+<link rel="preload" href="fonts/karla-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+/* =============================================================================
+   1. POLICE ET COULEURS (mêmes bases que index.html)
+   ============================================================================= */
+@font-face{font-family:"Karla";src:url("fonts/karla-latin.woff2") format("woff2");font-weight:200 800;font-style:normal;font-display:swap}
+:root{
+  --bg:#f4f5fa; --surface:#ffffff; --ink:#14152b; --muted:#555a75; --line:#d9dcea;
+  --navy:#000080; --navy-soft:#e6e8f6;
+  --orange:#ff6633; --orange-ink:#c7410f; --orange-soft:#ffece4;
+  --ok:#1d7347; --ok-soft:#dff2e7; --bad:#b3261e; --bad-soft:#fbe3e1;
+  --intra:#159447;       /* penon d'INTRADOS (côté au vent) : vert */
+  --extra:#d62828;       /* penon d'EXTRADOS (côté sous le vent) : rouge */
+  --sail:#fbfbff;        /* toile des voiles dans les schémas */
+  --sea:#dfe9f7;         /* eau / ciel dans les schémas */
+  --hull:#7a7f99;        /* coque et mât */
+  --f:"Karla",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0a0b22; --surface:#13153a; --ink:#e8e9f6; --muted:#a2a6c6; --line:#262a5a;
+  --navy:#a4aaff; --navy-soft:#1c2060; --orange:#ff7a4d; --orange-ink:#ff9a75; --orange-soft:#3a1d14;
+  --ok:#5fd396; --ok-soft:#123323; --bad:#ff8a80; --bad-soft:#3b1716;
+  --intra:#4fd88a; --extra:#ff6b6b;
+  --sail:#2a2d5c; --sea:#101a3e; --hull:#8c90b3; color-scheme:dark}}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16.5px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 80px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(2.3rem,6.5vw,3.6rem);font-weight:800;color:var(--navy);letter-spacing:-.01em}
+h2{font-size:clamp(1.7rem,4.4vw,2.3rem);font-weight:800;color:var(--navy)}
+h3{font-size:1.25rem;font-weight:800}
+p{margin:0}
+a{color:var(--navy)}
+.eyebrow{font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--orange-ink)}
+.lead{color:var(--muted);max-width:68ch;font-size:1.05rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
+section{display:flex;flex-direction:column;gap:18px}
+svg text{font-family:var(--f)}
+
+/* =============================================================================
+   2. EN-TÊTE, SOMMAIRE ET CHAPITRES
+   ============================================================================= */
+.band{background:var(--navy);color:#fff;border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.band img{width:42px;height:42px;border-radius:8px;object-fit:contain;background:#fff}
+.band span{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.9rem}
+.band nav{margin-left:auto;display:flex;gap:16px}
+.band a{color:#fff;font-size:.9rem;font-weight:600}
+@media (prefers-color-scheme: dark){.band{background:var(--navy-soft)}}
+.hero-text{display:flex;flex-direction:column;gap:10px}
+
+/* Sommaire : une carte par chapitre */
+.toc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px}
+.toc ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.toc ol a{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--bg);text-decoration:none;color:var(--ink);border:1.5px solid transparent;height:100%}
+.toc ol a:hover{border-color:var(--orange)}
+.toc .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--navy);color:var(--surface);display:grid;place-items:center;font-weight:800}
+.toc b{display:block;line-height:1.2}
+.levels{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.92rem;color:var(--muted)}
+
+
+/* Un chapitre = grosse pastille numérotée + trait de séparation épais */
+.chap{border-top:5px solid var(--navy);padding-top:26px;margin-top:16px;scroll-margin-top:10px}
+.chap-head{display:flex;gap:16px;align-items:center}
+.chap-num{flex:none;width:64px;height:64px;border-radius:50%;background:var(--navy);color:var(--surface);display:grid;place-items:center;font-size:2rem;font-weight:800;box-shadow:0 0 0 6px var(--navy-soft)}
+.chap-head .eyebrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+@media (max-width:480px){.chap-num{width:48px;height:48px;font-size:1.5rem}}
+
+/* Bouton flottant « Sommaire » */
+.totop{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:5;
+  background:var(--navy);color:var(--surface);text-decoration:none;font-weight:800;font-size:.88rem;padding:9px 14px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+/* Encadrés */
+.golden{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--orange-soft);
+  border-left:6px solid var(--orange);padding:16px 18px;border-radius:0 var(--r) var(--r) 0}
+.golden strong{font-size:1.25rem;font-weight:800;display:block}
+.golden .big{font-size:2.6rem;font-weight:800;color:var(--orange);line-height:1}
+.ess{background:var(--ok-soft);border-left:6px solid var(--ok);border-radius:0 var(--r) var(--r) 0;padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.ess > b{color:var(--ok);text-transform:uppercase;letter-spacing:.08em;font-size:.82rem}
+.ess ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+div.more{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:0 var(--r) var(--r) 0;padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+div.more > b{color:var(--orange-ink);text-transform:uppercase;letter-spacing:.08em;font-size:.82rem}
+.mbody{display:flex;flex-direction:column;gap:8px;font-size:.94rem}
+.mbody ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.hint{display:flex;align-items:center;gap:10px;font-size:.92rem;color:var(--muted)}
+.hint .tap{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:.85rem;animation:pulse 2s ease-in-out infinite;flex:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,102,51,.5)}50%{box-shadow:0 0 0 8px rgba(255,102,51,0)}}
+.note{font-size:.94rem;padding:10px 12px;border-radius:10px}
+.note b{font-weight:800}
+.note.reg{background:var(--navy-soft)} .note.reg b{color:var(--navy)}
+.note.trap{background:var(--bad-soft)} .note.trap b{color:var(--bad)}
+.note.club{background:var(--orange-soft)} .note.club b{color:var(--orange-ink)}
+.btn{border:2px solid var(--navy);background:transparent;color:var(--navy);border-radius:999px;padding:6px 14px;font-weight:800;display:inline-flex;gap:8px;align-items:center;text-decoration:none}
+.btn:hover{background:var(--navy-soft)}
+.btn.solid{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn[aria-pressed="true"]{background:var(--navy);color:var(--surface)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:.82rem;font-weight:700;background:var(--navy-soft);color:var(--navy)}
+.chip.opt{background:var(--orange-soft);color:var(--orange-ink)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.mid{background:var(--orange-soft);color:var(--orange-ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.mnemo{display:flex;gap:14px;align-items:center;background:var(--navy-soft);border-radius:var(--r);padding:14px 16px}
+.mnemo .big{font-size:2rem;line-height:1}
+.mnemo strong{color:var(--navy);font-size:1.1rem}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.figbox{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px}
+.figbox svg{width:100%;height:auto;background:var(--sea);border-radius:8px}
+.figbox figcaption{font-size:.88rem;color:var(--muted)}
+.vert{color:var(--intra);font-weight:800}
+.rouge{color:var(--extra);font-weight:800}
+
+/* Mot du lexique, cliquable dans le texte */
+a.term{color:inherit;text-decoration:underline dotted var(--orange);text-decoration-thickness:2px;text-underline-offset:3px;cursor:help}
+a.term:hover{color:var(--orange-ink)}
+
+/* =============================================================================
+   3. LES BASES
+   ============================================================================= */
+.concept{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px}
+.concept .num{font-weight:800;color:var(--orange-ink)}
+.concept p{font-size:.94rem}
+.concept svg{width:100%;height:auto;background:var(--sea);border-radius:8px}
+.sign{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:.92rem}
+.sign > b{font-size:1rem;display:block;margin-bottom:4px}
+.power{display:grid;grid-template-columns:repeat(3,1fr);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.power div{padding:12px 14px;font-size:.92rem;background:var(--surface);border-right:1px solid var(--line)}
+.power div:last-child{border-right:0}
+.power b{display:block;font-size:1rem}
+.power .lv{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted)}
+@media (max-width:640px){.power{grid-template-columns:1fr}.power div{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* =============================================================================
+   4. SIMULATEURS (hauban, foc, spi)
+   ============================================================================= */
+.sim{display:grid;grid-template-columns:minmax(260px,1.1fr) 1fr;gap:20px;align-items:start}
+.sim > *{min-width:0}
+@media (max-width:780px){.sim{grid-template-columns:1fr}}
+.sim-view{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;background:var(--sea);border-radius:10px;padding:10px}
+.sim-view svg{height:auto;max-width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.86rem;color:var(--muted);justify-content:center}
+.legend i{display:inline-block;width:26px;height:0;border-top:3px solid var(--intra);vertical-align:middle;margin-right:6px}
+.legend i.lee{border-top:3px dashed var(--extra)}
+.ctrls{display:flex;flex-direction:column;gap:16px}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl label,.ctrl .lbl{font-weight:800;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ctrl output{font-weight:700;color:var(--orange-ink)}
+.ctrl input[type=range]{width:100%;accent-color:var(--orange);height:28px}
+.ctrl .ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)}
+.ctrl small{color:var(--muted);font-weight:400}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.verdict{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.verdict .what{font-weight:700}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.roles{grid-template-columns:1fr}}
+.role{background:var(--surface);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;font-size:.93rem;border:1px solid var(--line)}
+.role > b{text-transform:uppercase;letter-spacing:.08em;font-size:.76rem;color:var(--muted)}
+
+/* Penons animés : ils filent (flow), se lèvent (lift) ou s'enroulent (stall) */
+.tt{fill:none;stroke-width:3;stroke-linecap:round;transform-box:fill-box;transform-origin:0% 50%}
+.tt.ww{stroke:var(--intra)}
+.tt.lw{stroke:var(--extra);stroke-dasharray:5 3}
+.tt.wool{stroke:var(--orange)}
+.tt.flow{animation:flow .5s ease-in-out infinite alternate}
+.tt.lift{animation:lift .4s ease-in-out infinite alternate}
+.tt.stall{animation:stall .9s ease-in-out infinite alternate}
+@keyframes flow{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@keyframes lift{0%{transform:rotate(-45deg)}50%{transform:rotate(-140deg)}100%{transform:rotate(-80deg)}}
+@keyframes stall{0%{transform:rotate(55deg)}50%{transform:rotate(125deg)}100%{transform:rotate(90deg)}}
+.flap{animation:flap .18s linear infinite alternate}
+@keyframes flap{from{transform:translateX(-2px)}to{transform:translateX(2px)}}
+@media (prefers-reduced-motion:reduce){
+  .tt,.flap,.hint .tap{animation:none!important}
+  .tt.lift{transform:rotate(-90deg)} .tt.stall{transform:rotate(95deg)}}
+
+/* =============================================================================
+   5. COMMANDES, TABLEAU DE BORD, SYMPTÔMES, LEXIQUE, QUIZ
+   ============================================================================= */
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.cmds{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media (max-width:360px){.cmds{grid-template-columns:1fr}}
+.cmd{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.cmd[hidden]{display:none}
+.cmd .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.cmd .tags{display:flex;gap:6px;flex-wrap:wrap}
+.cmd p{font-size:.93rem}
+.cmd svg{width:100%;height:auto;background:var(--sea);border-radius:8px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.duo div{background:var(--bg);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.duo div > b{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--navy)}
+
+.pick{display:flex;flex-direction:column;gap:10px}
+.pick .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pick .row > span{font-weight:800;min-width:70px}
+.board{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;align-items:start}
+.board > *{min-width:0}
+@media (max-width:760px){.board{grid-template-columns:1fr}}
+.board figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.board figure svg{width:100%;height:auto;background:var(--sea);border-radius:10px}
+.board figcaption{font-size:.86rem;color:var(--muted)}
+.settings{display:flex;flex-direction:column}
+.set{display:grid;grid-template-columns:130px 1fr;gap:4px 14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.set:last-child{border-bottom:0}
+.set .k{font-weight:800}
+.set .v{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-weight:700;color:var(--navy)}
+.set .tip{grid-column:2;font-size:.88rem;color:var(--muted)}
+@media (max-width:460px){.set{grid-template-columns:1fr}.set .tip{grid-column:1}}
+.gauge{display:inline-flex;gap:3px}
+.gauge i{display:block;width:14px;height:8px;border-radius:2px;background:var(--line)}
+.gauge i.on{background:var(--orange)}
+
+.sympt{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px;align-items:start}
+@media (max-width:360px){.sympt{grid-template-columns:1fr}}
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+details[open]{border-color:var(--navy)}
+summary{cursor:pointer;padding:12px 14px;font-weight:800;display:flex;gap:10px;align-items:baseline;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";color:var(--orange-ink);font-weight:800;width:14px;flex:none}
+details[open] > summary::before{content:"–"}
+.sbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px;font-size:.93rem}
+.sbody ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+
+.lex{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.lexi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-size:.92rem;scroll-margin-top:60px;transition:box-shadow .3s}
+.lexi dfn{font-style:normal;font-weight:800;font-size:1.05rem;color:var(--navy)}
+.lexi.flash{box-shadow:0 0 0 3px var(--orange)}
+
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:16px}
+.qbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.92rem;color:var(--muted)}
+.progress{flex:1;min-width:120px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--orange);transition:width .3s}
+.qtext{font-size:1.2rem;font-weight:800;line-height:1.35}
+.answers{display:grid;gap:8px}
+.ans{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;text-align:left;font-size:1rem}
+.ans:hover:not(:disabled){border-color:var(--navy)}
+.ans:disabled{cursor:default}
+.ans.good{border-color:var(--ok);background:var(--ok-soft)}
+.ans.bad{border-color:var(--bad);background:var(--bad-soft)}
+.after{display:flex;flex-direction:column;gap:12px}
+.explain{padding:12px 14px;border-radius:10px;background:var(--navy-soft);font-size:.96rem}
+.explain > b{color:var(--navy)}
+.result{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.result .score{font-size:3.4rem;font-weight:800;color:var(--navy);line-height:1}
+.result .actions,.qstart{display:flex;gap:10px;flex-wrap:wrap}
+footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<!-- =========================================================================
+     EN-TÊTE + SOMMAIRE
+     ========================================================================= -->
+<header id="top" style="display:flex;flex-direction:column;gap:20px">
+  <div class="band"><img src="images/logo.jpg" alt="Logo CVBS" width="42" height="42"><span>Régler son quillard en navigation</span>
+    <nav><a href="index.html">Le départ</a><a href="https://cvbs.fr/" target="_blank" rel="noopener">cvbs.fr</a></nav></div>
+  <div class="hero-text">
+    <h1>Les réglages en navigation</h1>
+    <p class="lead">Foc, grand-voile, spi : sur un quillard comme le Vent d'Ouest ou le F15, le barreur et l'équipier règlent les voiles en permanence. Apprends le vocabulaire, lis les penons, joue avec les simulateurs, puis teste-toi avec le quiz.</p>
+  </div>
+</header>
+
+<nav class="toc" id="sommaire" aria-label="Sommaire">
+  <h2 style="font-size:1.4rem">Sommaire</h2>
+  <ol>
+    <li><a href="#vocab"><span class="n">1</span><span><b>Le bateau et ses voiles</b></span></a></li>
+    <li><a href="#bases"><span class="n">2</span><span><b>Ce que tu règles</b></span></a></li>
+    <li><a href="#hauban"><span class="n">3</span><span><b>Le penon de hauban</b></span></a></li>
+    <li><a href="#foc"><span class="n">4</span><span><b>Le foc et ses penons</b></span></a></li>
+    <li><a href="#gv"><span class="n">5</span><span><b>La grand-voile et le chariot</b></span></a></li>
+    <li><a href="#spi"><span class="n">6</span><span><b>Le spi</b></span></a></li>
+    <li><a href="#commandes"><span class="n">7</span><span><b>Les commandes une par une</b></span></a></li>
+    <li><a href="#allures"><span class="n">8</span><span><b>Selon l'allure et le vent</b></span></a></li>
+    <li><a href="#symptomes"><span class="n">9</span><span><b>Le symptôme, la correction</b></span></a></li>
+    <li><a href="#quiz"><span class="n">10</span><span><b>Le quiz</b></span></a></li>
+    <li><a href="#lexique"><span class="n">11</span><span><b>Le lexique</b></span></a></li>
+</ol>
+  <p class="levels">Un mot <a class="term" href="#lexique">souligné en pointillés</a> renvoie à sa définition dans le lexique.</p>
+</nav>
+
+<div class="golden">
+  <div class="big" aria-hidden="true">↻</div>
+  <div>
+    <strong>Regarde, règle, regarde à nouveau</strong>
+    <p>Un réglage n'est jamais fini : le vent change de force et de direction toutes les quelques secondes. Les penons, la gîte et la sensation de barre te disent en direct si les voiles sont bien réglées. Une seule commande à la fois, et on observe le résultat.</p>
+  </div>
+</div>
+
+<!-- =========================================================================
+     CHAPITRE 1 — LE BATEAU ET SES VOILES (dessins annotés, faits par le script)
+     ========================================================================= -->
+<section id="vocab" class="chap" aria-labelledby="h-vocab">
+  <div class="chap-head"><span class="chap-num">1</span><div><p class="eyebrow">Chapitre 1</p><h2 id="h-vocab">Le bateau et ses voiles</h2></div></div>
+  <p class="lead">Avant de régler, il faut parler la même langue que ton coéquipier. Chaque voile a trois bords et trois coins, avec le même nom sur la grand-voile, le foc et le spi.</p>
+  <div class="cols">
+    <figure class="figbox" style="grid-column:1/-1"><svg id="figBoat" viewBox="0 0 640 400" role="img" aria-label="Quillard vu de côté avec le nom des voiles et des pièces"></svg>
+      <figcaption>Le bateau vu de côté, au près. L'avant est à droite.</figcaption></figure>
+  </div>
+  <div class="cols">
+    <div class="sign"><b>Les 3 bords d'une voile</b><span><b>Guindant</b> : le bord avant (le long du mât ou de l'étai).<br><b>Chute</b> : le bord arrière, libre.<br><b>Bordure</b> : le bord du bas.</span></div>
+    <div class="sign"><b>Les 3 coins</b><span><b>Tête</b> : en haut (drisse).<br><b>Point d'amure</b> : en bas, à l'avant.<br><b>Point d'écoute</b> : en bas, à l'arrière, là où tire l'écoute.</span></div>
+    <div class="sign"><b>Les 2 faces</b><span><b class="vert">Intrados</b> : la face qui reçoit le vent (côté au vent).<br><b class="rouge">Extrados</b> : la face sous le vent, où l'air est « aspiré ».</span></div>
+    <div class="sign"><b>Les 4 verbes</b><span><b>Border</b> / <b>choquer</b> : tirer ou relâcher une écoute.<br><b>Lofer</b> / <b>abattre</b> : tourner vers le vent ou s'en éloigner.</span></div>
+  </div>
+  <p class="note club"><b>À deux à bord · </b>le <b>barreur</b> tient la barre et, le plus souvent, l'écoute de grand-voile. L'<b>équipier</b> règle le foc, le spi et les autres commandes. Sur cette page, chaque conseil dit qui fait quoi.</p>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 2 — LES BASES
+     ========================================================================= -->
+<section id="bases" class="chap" aria-labelledby="h-bases">
+  <div class="chap-head"><span class="chap-num">2</span><div><p class="eyebrow">Chapitre 2</p><h2 id="h-bases">Ce que tu règles sur une voile</h2></div></div>
+  <p class="lead">Toutes les commandes agissent sur trois choses seulement. Les petits schémas montrent la voile vue d'en haut : le mât est le point gris, le vent arrive par le haut.</p>
+  <div class="cols">
+    <div class="concept"><span class="num">1 · L'angle</span><h3>Border ou choquer</h3><div id="fig-angle"></div>
+      <p>L'angle entre la voile et le vent. Trop bordée, la voile décroche et freine ; trop choquée, elle fasseye. Se règle à l'écoute, au chariot de GV, au bras du spi.</p></div>
+    <div class="concept"><span class="num">2 · Le creux</span><h3>Voile plate ou creuse</h3><div id="fig-depth"></div>
+      <p>Une voile creuse est puissante (petit temps) ; une voile plate gîte moins (brise). Se règle à la bordure, au cunningham, à la drisse.</p></div>
+    <div class="concept"><span class="num">3 · Le vrillage</span><h3>Le haut ouvert ou fermé</h3><div id="fig-twist"></div>
+      <p>Le haut de la voile (pointillés) s'ouvre plus que le bas. Plus il s'ouvre, moins la voile pousse et fait gîter. Se règle à l'écoute, au hale-bas, au point de tire du foc.</p></div>
+  </div>
+
+  <h3>Puissance ou dépuissance : la logique selon le vent</h3>
+  <div class="power">
+    <div><span class="lv">Petit temps</span><b>Puissance, mais souple</b>Voiles un peu creuses, un peu choquées, haut légèrement ouvert pour que l'air s'écoule malgré le peu de vent.</div>
+    <div><span class="lv">Médium</span><b>Puissance maximale</b>Tout est bordé et tendu juste ce qu'il faut. L'équipage au rappel garde le bateau à plat.</div>
+    <div><span class="lv">Brise</span><b>Dépuissance</b>Voiles plates, haut ouvert, on choque dans les rafales. Le but : garder le bateau à plat plutôt que de le laisser gîter.</div>
+  </div>
+
+  <h3>Les indicateurs à surveiller</h3>
+  <div class="cols">
+    <div class="sign"><b>Le penon de hauban</b>D'où vient le vent ? <a href="#hauban">Chapitre 3 →</a></div>
+    <div class="sign"><b>Les penons du foc</b>L'air colle-t-il bien à la voile ? <a href="#foc">Chapitre 4 →</a></div>
+    <div class="sign"><b>Les penons de chute de GV</b>Le haut de la grand-voile est-il trop fermé ? <a href="#gv">Chapitre 5 →</a></div>
+    <div class="sign"><b>Le guindant du spi</b>Le spi est-il réglé à la limite ? <a href="#spi">Chapitre 6 →</a></div>
+    <div class="sign"><b>La gîte et la barre</b>Une barre légèrement ardente et une gîte modérée et stable. Trop de gîte = trop de puissance.</div>
+  </div>
+  <div class="more"><b>En détail</b><div class="mbody">
+    <ul>
+      <li><b>Le vent apparent bouge tout le temps.</b> Quand une risée arrive, le vent apparent recule (il vient plus de l'arrière) : au près tu peux lofer, et les voiles peuvent être un peu choquées. Quand le bateau accélère ensuite, le vent apparent revient vers l'avant : reborde.</li>
+      <li><b>La puissance se gère dans l'ordre.</b> Quand le vent monte : d'abord le rappel, puis le cunningham, la bordure et le hale-bas, puis le chariot, et enfin l'écoute choquée dans les rafales.</li>
+      <li><b>Un bateau à plat va plus vite.</b> La gîte fait déraper le bateau et le rend ardent : le safran freine pour tenir le cap.</li>
+    </ul></div></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 3 — LE PENON DE HAUBAN
+     ========================================================================= -->
+<section id="hauban" class="chap" aria-labelledby="h-hb">
+  <div class="chap-head"><span class="chap-num">3</span><div><p class="eyebrow">Chapitre 3</p><h2 id="h-hb">Le penon de hauban : d'où vient le vent ?</h2></div></div>
+  <p class="lead">Un brin de laine attaché sur chaque hauban, à hauteur d'yeux. Il flotte dans le sens où va le vent, comme une petite manche à air. C'est l'indicateur le plus simple du bateau, et le premier à regarder.</p>
+  <div class="ess"><b>À retenir</b><ul>
+    <li>Le penon pointe vers l'arrière au près, sur le côté au travers, vers l'avant au portant.</li>
+    <li>Il montre le vent apparent : celui que ressent le bateau en mouvement.</li>
+    <li>Au vent arrière, si le vent arrive du côté de la bôme : danger d'empannage.</li></ul></div>
+  <p class="hint"><span class="tap" aria-hidden="true">☝</span>Fais tourner le vent autour du bateau et regarde le penon (en orange, sur les haubans).</p>
+  <div class="panel sim">
+    <div class="sim-view" aria-hidden="true"><svg id="hbView" viewBox="0 0 300 330" width="300"></svg></div>
+    <div class="ctrls">
+      <div class="ctrl"><label for="hbTh">D'où vient le vent ? <output id="hbThO"></output></label>
+        <input type="range" id="hbTh" min="0" max="200" step="5" value="45">
+        <div class="ends"><span>← de face</span><span>de l'arrière →</span></div></div>
+      <div class="verdict" id="hbVerdict" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="cols">
+    <p class="note reg"><b>Au près · </b>le penon donne l'angle au vent. S'il remonte vers l'avant sans que tu aies touché la barre, le vent a tourné vers l'avant (refusante) : abats. S'il recule (adonnante) : tu peux lofer.</p>
+    <p class="note reg"><b>Sous spi · </b>le tangon se règle perpendiculaire au penon de hauban. C'est le repère le plus fiable de l'équipier.</p>
+    <p class="note trap"><b>Piège · </b>le penon mouillé colle au hauban et ne montre plus rien. Utilise de la laine légère, ou une bande de ruban fin, et remplace-la souvent.</p>
+  </div>
+  <div class="more"><b>En détail</b><div class="mbody">
+    <ul>
+      <li><b>Penon de hauban et girouette.</b> Si le bateau a une girouette en tête de mât, elle voit le vent plus haut, où il est souvent plus fort et un peu plus à droite ou à gauche : les deux peuvent différer légèrement.</li>
+      <li><b>Dans une risée, le penon recule</b> (le vent apparent vient plus de l'arrière) ; dans une molle, il avance. Au portant, cela aide à jouer : abats dans la risée, lofe dans la molle.</li>
+      <li><b>Le vent apparent avance quand le bateau accélère.</b> Un bateau rapide au portant a son vent apparent bien plus sur l'avant que le vent réel.</li>
+    </ul></div></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 4 — LES PENONS DU FOC
+     ========================================================================= -->
+<section id="foc" class="chap" aria-labelledby="h-foc">
+  <div class="chap-head"><span class="chap-num">4</span><div><p class="eyebrow">Chapitre 4</p><h2 id="h-foc">Lire les penons du foc</h2></div></div>
+  <p class="lead">Sur le foc, près du guindant, des brins de laine sont collés à trois hauteurs, de chaque côté de la voile. On voit celui de l'<span class="vert">intrados</span> (vert ici) directement, et celui de l'<span class="rouge">extrados</span> (rouge ici) par transparence. Quand tout est bien réglé, les six filent vers l'arrière.</p>
+  <div class="ess"><b>À retenir</b><ul>
+    <li><span class="vert">Penon vert (intrados) qui se lève</span> → le barreur abat, ou l'équipier borde.</li>
+    <li><span class="rouge">Penon rouge (extrados) qui décroche</span> → le barreur lofe, ou l'équipier choque.</li>
+    <li>Les deux filent → c'est réglé, on garde le cap.</li></ul></div>
+
+  <h3>Ce qui se passe dans l'air (le foc vu d'en haut, en coupe)</h3>
+  <div class="cols" id="flowFigs"></div>
+
+  <h3>Le simulateur</h3>
+  <p class="hint"><span class="tap" aria-hidden="true">☝</span>Choisis d'abord la force du vent, puis bouge la barre, l'écoute et le point de tire.</p>
+  <div class="panel sim">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="sim-view" aria-hidden="true">
+        <svg id="jibTop" viewBox="0 0 180 210" width="170"></svg>
+        <svg id="jibSide" viewBox="0 0 250 320" width="210"></svg>
+      </div>
+      <div class="legend"><span><i></i>penon d'intrados (côté au vent)</span><span><i class="lee"></i>penon d'extrados (sous le vent)</span></div>
+    </div>
+    <div class="ctrls">
+      <div class="ctrl"><span class="lbl">Force du vent</span>
+        <div class="seg" id="jWind">
+          <button class="btn" data-w="pt" aria-pressed="false">Petit temps</button>
+          <button class="btn" data-w="med" aria-pressed="true">Médium</button>
+          <button class="btn" data-w="brise" aria-pressed="false">Brise</button>
+        </div></div>
+      <div class="ctrl"><label for="jWa">Barreur : angle au vent apparent <output id="jWaO"></output></label>
+        <input type="range" id="jWa" min="20" max="60" step="1" value="32">
+        <div class="ends"><span>← lofer (plus près)</span><span>abattre →</span></div></div>
+      <div class="ctrl"><label for="jSh">Équipier : écoute de foc <output id="jShO"></output></label>
+        <input type="range" id="jSh" min="5" max="35" step="1" value="18">
+        <div class="ends"><span>← bordée</span><span>choquée →</span></div></div>
+      <div class="ctrl"><span class="lbl">Équipier : point de tire <small>le bon réglage dépend du vent</small></span>
+        <div class="seg" id="jLead">
+          <button class="btn" data-lead="avant" aria-pressed="false">Avancé</button>
+          <button class="btn" data-lead="centre" aria-pressed="true">Au milieu</button>
+          <button class="btn" data-lead="arriere" aria-pressed="false">Reculé</button>
+        </div></div>
+      <div class="verdict" id="jVerdict" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="mnemo"><span class="big" aria-hidden="true">🧶</span><div><strong>Pour le barreur : « la barre va vers le penon qui décroche ».</strong>
+    <p>Penon vert (côté au vent) qui s'agite → tu pousses la barre côté au vent, le bateau abat. Penon rouge (côté sous le vent) qui décroche → barre côté sous le vent, le bateau lofe. Pour l'équipier : vert qui se lève → border ; rouge qui décroche → choquer.</p></div></div>
+  <div class="cols">
+    <p class="note club"><b>Le point de tire selon le vent · </b><b>petit temps</b> : avancé, pour du creux et de la puissance en bas du foc. <b>Médium</b> : au milieu, les trois penons verts se lèvent ensemble quand tu lofes. <b>Brise</b> : reculé, le haut du foc s'ouvre pour dépuissancer ; le penon vert du haut se lève alors un peu avant les autres, c'est voulu.</p>
+    <p class="note reg"><b>Les couleurs · </b>sur cette page, vert = intrados et rouge = extrados. Sur ton bateau, les penons peuvent être d'une autre couleur : ce qui compte, c'est le côté de la voile où ils sont collés.</p>
+  </div>
+  <div class="more"><b>En détail</b><div class="mbody">
+    <ul>
+      <li><b>Serrer ou relancer.</b> Quand le bateau va bien, tu peux serrer le vent jusqu'à ce que le penon vert du haut frémisse. Dès que le bateau ralentit (molle, sortie de virement), abats un peu, penons verts bien filants, pour relancer avant de remonter.</li>
+      <li><b>Le test du point de tire.</b> Au près, lofe très doucement : regarde dans quel ordre les penons verts se lèvent. Le haut d'abord → le haut est ouvert (bien en brise, trop en médium : avance). Le bas d'abord → le haut est trop fermé : recule.</li>
+      <li><b>Barreur et équipier ensemble.</b> Dans le médium, c'est plutôt le barreur qui suit les penons (petits coups de barre) et l'équipier qui garde l'écoute fixe. Dans le petit temps, l'équipier choque un peu dans les molles pour relancer.</li>
+    </ul></div></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 5 — LA GRAND-VOILE ET LE CHARIOT (simulateur : fonction gvUpdate)
+     ========================================================================= -->
+<section id="gv" class="chap" aria-labelledby="h-gv">
+  <div class="chap-head"><span class="chap-num">5</span><div><p class="eyebrow">Chapitre 5</p><h2 id="h-gv">La grand-voile : écoute, chariot et penon de chute</h2></div></div>
+  <p class="lead">La grand-voile se règle surtout avec deux commandes tenues par le barreur : l'écoute et, sur les bateaux qui en ont un, le chariot. Elles ne font pas la même chose, et c'est toute la finesse du réglage au près.</p>
+  <div class="ess"><b>À retenir</b><ul>
+    <li><b>L'écoute</b> règle deux choses à la fois : l'angle de la bôme ET l'ouverture du haut de la voile.</li>
+    <li><b>Le chariot</b> règle seulement l'angle de la bôme : le haut de la voile ne bouge pas.</li>
+    <li><b>Le penon de chute</b> du haut doit flotter vers l'arrière la plupart du temps. S'il se cache derrière la voile, choque un peu.</li></ul></div>
+  <div class="cols">
+    <p class="note reg"><b>Le chariot, c'est quoi ? · </b>une petite pièce qui coulisse sur un rail posé en travers du bateau. Le bas de l'écoute de grand-voile y est accroché. En le faisant glisser au vent ou sous le vent, on rapproche ou on écarte la bôme de l'axe, sans toucher à l'écoute.</p>
+    <p class="note reg"><b>Le penon de chute, c'est quoi ? · </b>un ruban cousu au bout de la latte du haut, sur le bord arrière (la chute) de la grand-voile. Il flotte vers l'arrière quand l'air s'échappe bien ; il se cache derrière la voile quand la chute est trop fermée.</p>
+    <p class="note club"><b>Sans chariot · </b>l'écoute fait tout. Dans la brise, on choque l'écoute pour moins gîter, et on tend le hale-bas pour que le haut de la voile ne s'ouvre pas trop.</p>
+  </div>
+  <p class="hint"><span class="tap" aria-hidden="true">☝</span>Au près : déplace le chariot, puis joue l'écoute. La bôme bouge dans les deux cas, mais le haut de la voile (pointillés) ne s'ouvre qu'avec l'écoute.</p>
+  <div class="panel sim">
+    <div class="sim-view" aria-hidden="true"><svg id="gvView" viewBox="0 0 300 300" width="300"></svg></div>
+    <div class="ctrls">
+      <div class="ctrl"><span class="lbl">Barreur : chariot <small>selon le bateau</small></span>
+        <div class="seg" id="gvCh">
+          <button class="btn" data-ch="vent" aria-pressed="false">Au vent</button>
+          <button class="btn" data-ch="centre" aria-pressed="true">Au centre</button>
+          <button class="btn" data-ch="sousvent" aria-pressed="false">Sous le vent</button>
+        </div></div>
+      <div class="ctrl"><label for="gvE">Barreur : écoute de grand-voile <output id="gvEO"></output></label>
+        <input type="range" id="gvE" min="0" max="20" step="1" value="4">
+        <div class="ends"><span>← bordée</span><span>choquée →</span></div></div>
+      <div class="verdict" id="gvVerdict" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="cols">
+    <p class="note reg"><b>Petit temps · </b>chariot au vent, écoute un peu choquée : la bôme reste près de l'axe, mais le haut s'ouvre pour laisser l'air s'échapper.</p>
+    <p class="note reg"><b>Médium · </b>chariot au centre, écoute bordée : bôme dans l'axe, penon de chute qui flotte la plupart du temps.</p>
+    <p class="note reg"><b>Brise · </b>chariot sous le vent, écoute bordée : la bôme s'écarte mais la chute reste tendue. Dans une rafale, on descend encore le chariot ou on choque l'écoute.</p>
+  </div>
+  <div class="more"><b>En détail</b><div class="mbody">
+    <ul>
+      <li><b>Pourquoi le chariot plutôt que l'écoute dans la brise ?</b> Choquer l'écoute ouvre le haut de la voile : le bateau perd du cap. Descendre le chariot écarte la bôme en gardant la chute tendue : on garde le cap.</li>
+      <li><b>Le penon de chute dans le petit temps.</b> S'il reste caché, la voile étouffe : choque un peu l'écoute et laisse le hale-bas mou. S'il flotte tout le temps, tu peux border un peu plus pour gagner du cap.</li>
+      <li><b>Qui fait quoi ?</b> Le barreur tient l'écoute, et souvent le chariot. Dans les grosses rafales, l'équipier peut aider en descendant le chariot pendant que le barreur garde l'écoute.</li>
+    </ul></div></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 6 — LE SPI
+     ========================================================================= -->
+<section id="spi" class="chap" aria-labelledby="h-spi">
+  <div class="chap-head"><span class="chap-num">6</span><div><p class="eyebrow">Chapitre 6</p><h2 id="h-spi">Le spi : faire friser le guindant</h2></div></div>
+  <p class="lead">Le spi est la grande voile ronde qu'on envoie aux allures portantes. Son coin au vent (le point d'amure) est tenu au bout du tangon, son coin sous le vent (le point d'écoute) par l'écoute de spi. On le règle presque uniquement en regardant son bord au vent : le guindant.</p>
+  <div class="ess"><b>À retenir</b><ul>
+    <li>Le tangon se règle perpendiculaire au vent (au penon de hauban).</li>
+    <li>On choque l'écoute jusqu'à ce que le bord au vent du spi commence à se replier, à « friser », puis on la reprend un peu. Et on recommence sans arrêt.</li>
+    <li>Le spi s'effondre ? Reborder vite.</li></ul></div>
+
+  <h3>Que veut dire « friser » ?</h3>
+  <p class="lead">Les dessins montrent le spi vu depuis l'arrière du bateau, comme si tu étais dans le cockpit et que tu regardais vers l'avant. Le tangon est à gauche, côté au vent.</p>
+  <div class="cols" id="curlFigs"></div>
+
+  <h3>Le simulateur</h3>
+  <div class="panel sim">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="sim-view" aria-hidden="true"><svg id="spiView" viewBox="0 0 340 370" width="320"></svg></div>
+    </div>
+    <div class="ctrls">
+      <div class="ctrl"><label for="sSh">Équipier : écoute de spi <output id="sShO"></output></label>
+        <input type="range" id="sSh" min="0" max="100" step="1" value="60">
+        <div class="ends"><span>← bordée</span><span>choquée →</span></div></div>
+      <div class="ctrl"><span class="lbl">Hauteur du tangon</span>
+        <div class="seg" id="sHeight">
+          <button class="btn" data-h="bas" aria-pressed="false">Trop bas</button>
+          <button class="btn" data-h="bon" aria-pressed="true">Bonne hauteur</button>
+          <button class="btn" data-h="haut" aria-pressed="false">Trop haut</button>
+        </div></div>
+      <div class="ctrl"><span class="lbl">Position du tangon <small>réglée au bras</small></span>
+        <div class="seg" id="sPole">
+          <button class="btn" data-p="avant" aria-pressed="false">Trop en avant</button>
+          <button class="btn" data-p="perp" aria-pressed="true">Perpendiculaire au vent</button>
+          <button class="btn" data-p="arriere" aria-pressed="false">Trop en arrière</button>
+        </div></div>
+      <div class="verdict" id="sVerdict" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="cols">
+    <p class="note reg"><b>Tangon · </b>perpendiculaire au vent apparent : regarde le penon de hauban. Quand tu abats, recule-le en bordant le bras ; quand tu lofes, avance-le en choquant le bras.</p>
+    <p class="note reg"><b>Hauteur · </b>les deux coins du bas du spi à la même hauteur, tangon à peu près horizontal. Le guindant frise d'abord en haut → baisse le tangon. D'abord en bas → monte-le.</p>
+    <p class="note trap"><b>Piège · </b>taquer l'écoute de spi. Un spi taqué est soit trop bordé (il freine et fait gîter), soit en train de s'effondrer. L'écoute reste toujours en main.</p>
+  </div>
+  <div class="more"><b>En détail</b><div class="mbody">
+    <ul>
+      <li><b>Le dialogue barreur-équipier.</b> L'équipier sent la pression dans l'écoute et l'annonce : « pression ! » quand elle monte (le barreur peut abattre), « ça tombe ! » quand elle baisse (le barreur lofe un peu pour relancer). C'est ce qui fait la différence au portant.</li>
+      <li><b>Petit temps.</b> Tangon plus bas, écoute tenue légère (son poids suffit parfois à fermer le spi), gestes lents. Le barreur lofe un peu pour garder le spi gonflé.</li>
+      <li><b>Brise.</b> Point d'écoute tenu bas, spi un peu plus bordé, tangon pas trop en arrière : le bateau roule moins. Dès que le bateau gîte, l'équipier choque un bon coup d'écoute.</li>
+    </ul></div></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 7 — LES COMMANDES (cartes générées à partir de la liste CMD)
+     ========================================================================= -->
+<section id="commandes" class="chap" aria-labelledby="h-cmd">
+  <div class="chap-head"><span class="chap-num">7</span><div><p class="eyebrow">Chapitre 7</p><h2 id="h-cmd">Les commandes une par une</h2></div></div>
+  <p class="lead">À quoi sert chaque commande, qui la règle, ce qui se passe dans un sens ou dans l'autre, et l'erreur classique. L'étiquette orange « selon le bateau » signale une commande que tous les bateaux du club n'ont pas.</p>
+  <div class="filters" id="cmdFilter" role="group" aria-label="Filtrer les commandes">
+    <button class="btn" data-f="all" aria-pressed="true">Toutes</button>
+    <button class="btn" data-f="foc" aria-pressed="false">Foc</button>
+    <button class="btn" data-f="gv" aria-pressed="false">Grand-voile</button>
+    <button class="btn" data-f="spi" aria-pressed="false">Spi</button>
+    <button class="btn" data-f="equipage" aria-pressed="false">Équipage</button>
+  </div>
+  <div class="cmds" id="cmds"></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 8 — SELON L'ALLURE ET LE VENT (données : liste MAT)
+     ========================================================================= -->
+<section id="allures" class="chap" aria-labelledby="h-all">
+  <div class="chap-head"><span class="chap-num">8</span><div><p class="eyebrow">Chapitre 8</p><h2 id="h-all">Selon l'allure et la force du vent</h2></div></div>
+  <p class="lead">Choisis une allure et une force de vent : voici les réglages de départ. Ensuite, ce sont les penons et la gîte qui décident. Les forces de vent sont des repères, pas des limites.</p>
+  <div class="pick">
+    <div class="row" id="pickAllure"><span>Allure</span>
+      <button class="btn" data-a="pres" aria-pressed="true">Près</button>
+      <button class="btn" data-a="travers" aria-pressed="false">Travers, largue</button>
+      <button class="btn" data-a="portant" aria-pressed="false">Portant au spi</button></div>
+    <div class="row" id="pickVent"><span>Vent</span>
+      <button class="btn" data-v="pt" aria-pressed="false">Petit temps · &lt; 8 nœuds</button>
+      <button class="btn" data-v="med" aria-pressed="true">Médium · 8 à 15 nœuds</button>
+      <button class="btn" data-v="brise" aria-pressed="false">Brise · &gt; 15 nœuds</button></div>
+  </div>
+  <div class="board">
+    <figure><svg id="allureFig" viewBox="0 0 300 300" role="img" aria-label="Le bateau vu d'en haut avec ses voiles"></svg>
+      <figcaption id="allureCap"></figcaption></figure>
+    <div class="settings" id="settings" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 9 — SYMPTÔMES (données : liste SYMPT)
+     ========================================================================= -->
+<section id="symptomes" class="chap" aria-labelledby="h-sym">
+  <div class="chap-head"><span class="chap-num">9</span><div><p class="eyebrow">Chapitre 9</p><h2 id="h-sym">Le symptôme, la correction</h2></div></div>
+  <p class="lead">Ce que tu ressens à la barre ou ce que tu vois dans les voiles, et ce qu'il faut faire, dans l'ordre. Commence par la première action et observe avant de passer à la suivante.</p>
+  <div class="sympt" id="sympt"></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 10 — QUIZ (données : liste Q)
+     ========================================================================= -->
+<section id="quiz" class="chap" aria-labelledby="h-quiz">
+  <div class="chap-head"><span class="chap-num">10</span><div><p class="eyebrow">Chapitre 10</p><h2 id="h-quiz">Le quiz « Tu es sur l'eau »</h2></div></div>
+  <p class="lead">Des bases jusqu'aux finesses du point de tire, de la grand-voile et du spi.</p>
+  <div class="quiz" id="quizBox"></div>
+</section>
+
+<!-- =========================================================================
+     CHAPITRE 11 — LEXIQUE (données : liste GL)
+     ========================================================================= -->
+<section id="lexique" class="chap" aria-labelledby="h-lex">
+  <div class="chap-head"><span class="chap-num">11</span><div><p class="eyebrow">Chapitre 11</p><h2 id="h-lex">Le lexique</h2></div></div>
+  <p class="lead">Tous les mots techniques de la page, par ordre alphabétique.</p>
+  <div class="lex" id="lex"></div>
+</section>
+
+<footer>
+  <p>Repères généraux de réglage, tels qu'enseignés en école de voile et en entraînement régate. Chaque bateau a ses particularités : si ta classe ou ton voilier a un guide de réglage, il prime.</p>
+  <p>Voir aussi : <a href="index.html">Le départ en régate</a></p>
+  <p>CVBS © 2026 · Les réglages en navigation, Sébastien RABAUD</p>
+</footer>
+</div>
+
+<a class="totop" href="#sommaire">↑ Sommaire</a>
+
+<script>
+"use strict";
+
+/* =============================================================================
+   PARTIE A — LES DONNÉES
+   ⚠ Ces textes sont insérés tels quels dans la page (innerHTML). Sans risque
+   tant qu'ils sont écrits ici à la main ; ne jamais y mettre de texte venant
+   de l'extérieur sans le nettoyer (faille XSS).
+   ============================================================================= */
+
+/* ---------- A1. Le lexique (chapitre 11) ----------
+     id : identifiant (ancre #lex-id)     n : le mot      d : la définition
+     al : les formes du mot à souligner automatiquement dans la page
+          (liste vide = pas de soulignement automatique) */
+const GL = [
+  {id:"guindant", n:"Guindant", d:"Le bord avant d'une voile : le long du mât pour la grand-voile, le long de l'étai pour le foc. Sur le spi, c'est le bord côté tangon (au vent).", al:["guindant","guindants"]},
+  {id:"chute", n:"Chute", d:"Le bord arrière d'une voile, libre. Une chute « fermée » est tendue et droite ; une chute « ouverte » laisse le haut de la voile partir vers l'extérieur.", al:["chute"]},
+  {id:"bordure", n:"Bordure", d:"Le bord du bas d'une voile. Sur la grand-voile, elle court le long de la bôme.", al:["bordure"]},
+  {id:"tete", n:"Tête", d:"Le coin du haut d'une voile, où s'accroche la drisse.", al:[]},
+  {id:"amure", n:"Point d'amure", d:"Le coin avant-bas d'une voile. Sur le spi, c'est le coin tenu au bout du tangon.", al:["point d'amure"]},
+  {id:"ecoute-pt", n:"Point d'écoute", d:"Le coin arrière-bas d'une voile, là où l'écoute est attachée.", al:["point d'écoute","points d'écoute"]},
+  {id:"intrados", n:"Intrados", d:"La face de la voile qui reçoit le vent (côté au vent). Ses penons sont en vert sur cette page.", al:["intrados"]},
+  {id:"extrados", n:"Extrados", d:"La face de la voile côté sous le vent, où l'air est « aspiré ». C'est elle qui fait avancer le bateau au près. Ses penons sont en rouge sur cette page.", al:["extrados"]},
+  {id:"penon", n:"Penon", d:"Brin de laine ou ruban très léger, collé sur une voile ou attaché à un hauban, qui montre comment l'air s'écoule.", al:["penon","penons"]},
+  {id:"border", n:"Border", d:"Tirer sur une écoute : la voile se rapproche de l'axe du bateau.", al:["border","borde","bordée","bordé"]},
+  {id:"choquer", n:"Choquer", d:"Relâcher une écoute : la voile s'écarte de l'axe du bateau.", al:["choquer","choque","choquée","choqué"]},
+  {id:"lofer", n:"Lofer", d:"Tourner le bateau vers le vent (on « remonte »).", al:["lofer","lofe","lofes"]},
+  {id:"abattre", n:"Abattre", d:"Tourner le bateau pour s'éloigner du vent.", al:["abattre","abats","abat"]},
+  {id:"faseyer", n:"Faseyer", d:"Une voile fasseye quand elle bat comme un drapeau, en commençant par le guindant : elle n'est pas assez bordée, ou le bateau est trop face au vent.", al:["fasseye","faseye","fasseyer","faseyer","faseyement"]},
+  {id:"friser", n:"Friser (spi)", d:"Le guindant du spi frise quand son bord commence à se replier vers l'intérieur, sur quelques centimètres, comme une feuille de papier qui s'enroule. C'est le signe que le spi est réglé juste : c'est ce qu'on cherche.", al:["friser","frise","frisé"]},
+  {id:"creux", n:"Creux", d:"La profondeur de la voile. Creuse = puissante ; plate = moins de gîte.", al:["creux"]},
+  {id:"vrillage", n:"Vrillage", d:"Le haut de la voile qui s'ouvre plus que le bas. Plus de vrillage = moins de puissance en haut.", al:["vrillage","vrille","vriller","vrillée"]},
+  {id:"ardent", n:"Ardent", d:"Un bateau ardent veut lofer tout seul : il faut tirer la barre vers soi (côté au vent) pour aller droit. Un peu, c'est bien ; trop, il freine.", al:["ardent","ardente"]},
+  {id:"rappel", n:"Rappel", d:"S'asseoir ou se pencher côté au vent pour redresser le bateau.", al:["rappel"]},
+  {id:"apparent", n:"Vent apparent", d:"Le vent ressenti à bord : le vent réel plus le vent créé par la vitesse du bateau. C'est lui que montrent les penons.", al:["vent apparent"]},
+  {id:"tangon", n:"Tangon", d:"Le tube qui écarte le coin au vent du spi (point d'amure), à l'opposé de la bôme.", al:["tangon"]},
+  {id:"bras", n:"Bras", d:"Le cordage du spi, côté tangon, qui tire le tangon vers l'arrière.", al:["bras"]},
+  {id:"balancine", n:"Balancine", d:"Le cordage qui tient le tangon en hauteur.", al:["balancine"]},
+  {id:"halebas", n:"Hale-bas", d:"Le palan qui tire la bôme vers le bas et tient la chute de la grand-voile.", al:["hale-bas"]},
+  {id:"cunningham", n:"Cunningham", d:"Le petit palan qui tend le bas du guindant de la grand-voile.", al:["cunningham"]},
+  {id:"pointtire", n:"Point de tire", d:"L'endroit où l'écoute de foc est renvoyée sur le pont : sur un rail avec un chariot, ou réglé avec un barber.", al:["point de tire"]},
+  {id:"barber", n:"Barber", d:"Petit cordage qui modifie l'angle de tire de l'écoute de foc (vers l'intérieur, l'extérieur ou le bas).", al:["barber"]},
+  {id:"chariot", n:"Chariot", d:"Pièce qui coulisse sur un rail. Le chariot de grand-voile déplace le point d'attache de l'écoute d'un bord à l'autre.", al:["chariot"]},
+  {id:"etai", n:"Étai", d:"Le câble qui tient le mât vers l'avant. Le foc y est accroché.", al:["étai"]},
+  {id:"hauban", n:"Hauban", d:"Les câbles qui tiennent le mât sur les côtés. On y attache des penons pour voir le vent.", al:["hauban","haubans"]},
+  {id:"bome", n:"Bôme", d:"Le tube horizontal qui tient le bas de la grand-voile.", al:["bôme"]},
+  {id:"risee", n:"Risée", d:"Zone où le vent est plus fort, visible sur l'eau (plus sombre et ridée). L'inverse : une molle.", al:["risée","risées"]},
+  {id:"adonnante", n:"Adonnante", d:"Le vent tourne vers l'arrière du bateau : au près, on peut lofer.", al:["adonnante"]},
+  {id:"refusante", n:"Refusante", d:"Le vent tourne vers l'avant du bateau : au près, il faut abattre.", al:["refusante"]},
+  {id:"empannage", n:"Empannage", d:"Changer de bord en passant l'arrière du bateau dans le vent : la bôme passe d'un côté à l'autre. Involontaire, il est brutal et dangereux.", al:["empannage"]},
+  {id:"auvent", n:"Au vent / sous le vent", d:"Au vent : le côté d'où vient le vent. Sous le vent : l'autre côté.", al:[]},
+  {id:"gite", n:"Gîte", d:"L'inclinaison du bateau sur le côté.", al:["gîte"]},
+  {id:"roulis", n:"Roulis (le bateau roule)", d:"Le bateau se balance d'un bord sur l'autre, de plus en plus fort. Cela arrive surtout au vent arrière dans la brise, quand le spi et le haut de la grand-voile oscillent. Le remède : border un peu le spi et le tenir bas, garder le hale-bas tendu, lofer légèrement.", al:["roulis","roule","rouler"]},
+  {id:"lof", n:"Départ au lof", d:"Le bateau gîte fortement et remonte au vent tout seul, sans que la barre puisse le retenir. Il arrive surtout sous spi dans une rafale. Le remède : choquer l'écoute de spi et le hale-bas, et abattre dès le début de la rafale.", al:["départ au lof","part au lof"]},
+  {id:"aulofee", n:"Aulofée", d:"Un mouvement du bateau qui lofe (se rapproche du vent). Petite et contrôlée, elle sert à réduire la gîte dans une rafale au près.", al:["aulofée"]},
+  {id:"molle", n:"Molle", d:"Zone où le vent faiblit. L'inverse d'une risée.", al:["molle","molles"]},
+  {id:"taquer", n:"Taquer", d:"Bloquer un cordage dans un taquet pour ne plus avoir à le tenir. À éviter pour les écoutes qui se jouent en permanence (spi, grand-voile dans la brise).", al:["taquer","taque","taqué","taquée"]},
+  {id:"assiette", n:"Assiette", d:"L'équilibre avant-arrière du bateau : l'étrave qui plonge ou l'arrière qui traîne dans l'eau. Elle se règle avec la place de l'équipage.", al:["assiette"]},
+  {id:"panne", n:"Mauvaise panne", d:"Au vent arrière, le vent arrive du même côté que la bôme. La bôme risque de passer brutalement de l'autre côté : c'est l'empannage involontaire.", al:["mauvaise panne"]}
+];
+
+/* ---------- A2. Les commandes (chapitre 7) ----------
+     v     : voile (foc, gv, spi, equipage) → sert au filtre
+     n     : nom          who : qui la règle (barreur / équipier)     opt : true = selon le bateau
+     role  : à quoi elle sert
+     aL/a  : effet dans un sens         bL/b : effet dans l'autre sens
+     when  : quand la régler            trap : l'erreur classique
+     fig   : schéma [type, légende gauche, légende droite] (voir fonction mini) */
+const CMD = [
+  {v:"foc", n:"Écoute de foc", who:"Équipier",
+   role:"Règle l'angle du foc par rapport au vent. Au près, elle règle aussi la tension de la chute.",
+   aL:"Bordée", a:"Le foc se rapproche de l'axe : plus de cap, mais il décroche si tu bordes trop.",
+   bL:"Choquée", b:"Le foc s'ouvre et se creuse : plus de vitesse, moins de cap.",
+   when:"En permanence, avec les penons. Aux allures débridées : choque jusqu'au faseyement, puis reborde juste assez.",
+   trap:"Border à fond « pour être sûr » : le foc étrangle le bateau, les penons rouges décrochent et le bateau ralentit.",
+   fig:["angle","bordée","choquée"]},
+  {v:"foc", n:"Point de tire du foc", who:"Équipier", opt:true,
+   role:"L'endroit où l'écoute arrive sur le pont (chariot sur rail ou barber). Il répartit la tension entre le bas et le haut du foc.",
+   aL:"Avancé", a:"Le haut se ferme, le bas se creuse : plus de puissance. Pour le petit temps et les allures débridées.",
+   bL:"Reculé", b:"Le haut s'ouvre, le bas s'aplatit : dépuissance. Pour la brise.",
+   when:"À chaque changement de force du vent : avancé dans le petit temps, au milieu dans le médium, reculé dans la brise.",
+   trap:"Le régler une fois au ponton et ne plus y toucher : il n'y a pas « une » bonne position, elle dépend du vent.",
+   fig:["twist","avancé : haut fermé","reculé : haut ouvert"]},
+  {v:"foc", n:"Drisse de foc", who:"Équipier", opt:true,
+   role:"Tend le guindant du foc et place le creux plus ou moins en avant.",
+   aL:"Tendue", a:"Le creux avance, l'entrée de la voile s'arrondit : le foc pardonne mieux les écarts de barre. Pour la brise.",
+   bL:"Relâchée", b:"Le creux recule, l'entrée devient fine : bon cap dans le petit temps.",
+   when:"Quand le vent change de force. Petits plis horizontaux au guindant = pas assez tendue ; gros pli vertical le long du guindant = trop tendue.",
+   trap:"Oublier de la reprendre quand le vent monte : le creux recule et le foc ferme sa chute.",
+   fig:["draft","tendue : creux en avant","relâchée : creux en arrière"]},
+  {v:"gv", n:"Écoute de grand-voile", who:"Barreur",
+   role:"Règle l'angle de la bôme, et au près la tension de la chute : c'est l'accélérateur du bateau.",
+   aL:"Bordée", a:"Bôme vers l'axe, chute qui se ferme : plus de cap, plus de puissance, plus de gîte.",
+   bL:"Choquée", b:"Bôme qui s'écarte, haut qui s'ouvre : moins de gîte, plus de vitesse.",
+   when:"En permanence. Au près dans la brise, elle se joue à chaque rafale : choquer dans la rafale, reborder après.",
+   trap:"Garder l'écoute taquée dans les rafales : le bateau gîte, devient ardent et ralentit.",
+   fig:["twist","bordée : chute fermée","choquée : chute ouverte"]},
+  {v:"gv", n:"Chariot de grand-voile", who:"Barreur ou équipier", opt:true,
+   role:"Déplace le point d'attache de l'écoute d'un bord à l'autre : on règle l'angle de la bôme sans changer la tension de la chute.",
+   aL:"Au vent", a:"La bôme revient vers l'axe sans fermer la chute : petit temps, recherche de cap.",
+   bL:"Sous le vent", b:"La bôme s'écarte, la chute reste tendue : dépuissance propre dans la brise.",
+   when:"Au près, à chaque changement de force du vent. Dans une rafale, on peut descendre le chariot au lieu de choquer l'écoute.",
+   trap:"Laisser le chariot au vent quand le vent forcit : le bateau gîte et devient ardent.",
+   fig:["angle","au vent","sous le vent"]},
+  {v:"gv", n:"Hale-bas", who:"Équipier",
+   role:"Tire la bôme vers le bas. Il tient la chute quand l'écoute ne peut plus le faire : aux allures portantes, et au près dans la brise.",
+   aL:"Tendu", a:"La bôme ne monte pas, la chute reste fermée, le bas de la voile s'aplatit un peu.",
+   bL:"Relâché", b:"La bôme monte, le haut de la voile s'ouvre (il vrille).",
+   when:"Au près : mou dans le petit temps, de plus en plus tendu quand le vent monte. Aux allures portantes : toujours repris, pour que le haut de la GV ne parte pas en avant.",
+   trap:"Garder beaucoup de hale-bas en abattant dans la brise : la bôme touche l'eau et le bateau part au lof. Choque-en un peu avant d'abattre.",
+   fig:["twist","tendu : chute fermée","relâché : haut qui vrille"]},
+  {v:"gv", n:"Cunningham", who:"Équipier", opt:true,
+   role:"Tend le bas du guindant de la grand-voile, près du point d'amure.",
+   aL:"Tendu", a:"Le creux avance, le haut s'aplatit et s'ouvre : dépuissance.",
+   bL:"Relâché", b:"Le creux recule, la voile garde sa puissance.",
+   when:"Dans la brise au près. Relâché dans le petit temps et aux allures portantes. Quelques petits plis au guindant dans le petit temps ne sont pas graves.",
+   trap:"L'oublier tendu en abattant : la grand-voile perd sa puissance au portant.",
+   fig:["draft","tendu : creux en avant","relâché : creux en arrière"]},
+  {v:"gv", n:"Bordure de grand-voile", who:"Équipier", opt:true,
+   role:"Tend le bas de la grand-voile le long de la bôme.",
+   aL:"Tendue", a:"Le bas de la voile s'aplatit : moins de puissance, plus de cap.",
+   bL:"Relâchée", b:"Le bas se creuse : plus de puissance (petit temps, allures portantes).",
+   when:"Tendue au près dans le médium et la brise. Relâchée aux allures portantes.",
+   trap:"La laisser tendue à fond au portant : la voile est plate là où elle devrait pousser.",
+   fig:["depth","tendue : plate","relâchée : creuse"]},
+  {v:"spi", n:"Bras et tangon", who:"Équipier",
+   role:"Le bras tire le tangon vers l'arrière. Il règle la position du coin au vent du spi.",
+   aL:"Bras bordé", a:"Le tangon recule, le spi se dégage de la grand-voile : quand tu abats vers le vent arrière.",
+   bL:"Bras choqué", b:"Le tangon avance vers l'étai : quand tu remontes vers le travers.",
+   when:"À chaque changement de cap. Le tangon reste perpendiculaire au vent apparent : regarde le penon de hauban.",
+   trap:"Trop reculer le tangon : le spi devient instable, s'effondre souvent et fait rouler le bateau.",
+   fig:["pole","bras bordé : tangon reculé","bras choqué : tangon avancé"]},
+  {v:"spi", n:"Écoute de spi", who:"Équipier",
+   role:"Règle l'angle du spi. C'est le réglage qui se joue le plus, sans arrêt.",
+   aL:"Bordée", a:"Le spi est stable mais « étranglé » : il pousse moins et fait gîter.",
+   bL:"Choquée", b:"Le spi s'ouvre et pousse plus… jusqu'à ce que le guindant se replie et qu'il s'effondre.",
+   when:"Toujours : choque jusqu'à voir le guindant friser, reprends un peu, recommence.",
+   trap:"Taquer l'écoute de spi : un spi taqué est toujours trop bordé ou en train de s'effondrer.",
+   fig:["angle","bordée","choquée"]},
+  {v:"spi", n:"Hauteur du tangon", who:"Équipier", opt:true,
+   role:"Réglée par la balancine (qui monte le tangon) et le hale-bas de tangon (qui le retient en bas).",
+   aL:"Monter", a:"Le coin au vent du spi monte, le guindant s'ouvre : si le guindant frise d'abord en bas.",
+   bL:"Baisser", b:"Le guindant se tend : si le guindant frise d'abord en haut.",
+   when:"Les deux coins du bas du spi à la même hauteur, tangon à peu près horizontal. Plus bas dans le petit temps, quand le spi retombe.",
+   trap:"Laisser le tangon haut dans le petit temps : le spi tombe et s'effondre sans arrêt.",
+   fig:null},
+  {v:"equipage", n:"Place de l'équipage", who:"Barreur et équipier",
+   role:"Le poids du barreur et de l'équipier règle la gîte et l'assiette avant-arrière. C'est un réglage à part entière, aussi important que les écoutes.",
+   aL:"Au vent, en arrière", a:"Le bateau se redresse ; l'étrave se dégage dans la brise et au portant.",
+   bL:"Sous le vent, en avant", b:"Le bateau gîte un peu ; l'arrière ne traîne pas dans l'eau dans le petit temps.",
+   when:"À chaque changement de vent, et en anticipant les rafales : on se met au rappel avant que le bateau gîte.",
+   trap:"Bouger brusquement dans le petit temps : chaque mouvement secoue les voiles et casse l'écoulement de l'air.",
+   fig:null}
+];
+
+/* ---------- A3. Le tableau de bord (chapitre 8) ----------
+   ALL : dessin du bateau pour chaque allure
+     wa = angle au vent (°), j = angle du foc, m = angle de la GV, spi = spi envoyé
+   MAT[allure][vent] : liste de réglages [commande, niveau, valeur, conseil]
+     niveau = 0 (relâché) à 4 (très tendu) → petite jauge ; null = pas de jauge */
+const ALL = {
+  pres:   {n:"Près",            wa:38,  j:10, m:6},
+  travers:{n:"Travers, largue", wa:95,  j:38, m:45},
+  portant:{n:"Portant au spi",  wa:150, j:70, m:75, spi:true}
+};
+const VENT = {pt:"Petit temps", med:"Médium", brise:"Brise"};
+const MAT = {
+  pres:{
+    pt:[
+      ["Écoute de foc",2,"Légèrement choquée","Le foc garde du creux et s'ouvre un peu en haut : il relance mieux le bateau."],
+      ["Point de tire",null,"Avancé","Plus de creux en bas du foc, pour la puissance."],
+      ["Écoute de GV",2,"Bordée sans écraser","Le penon de chute du haut de la GV doit flotter une bonne partie du temps."],
+      ["Chariot de GV",null,"Au vent","Il ramène la bôme vers l'axe sans fermer la chute."],
+      ["Hale-bas",0,"Mou","Laisse la voile vriller : dans le petit temps, l'air doit pouvoir s'échapper par le haut."],
+      ["Cunningham",0,"Relâché","Quelques petits plis au guindant ne sont pas graves."],
+      ["Bordure",2,"Un peu relâchée","Plus de creux en bas de la GV."],
+      ["Équipage",null,"En avant, un peu sous le vent","Une légère gîte aide les voiles à prendre leur forme et donne des sensations à la barre."],
+      ["Barre",null,"La vitesse d'abord","Abats un peu pour accélérer, puis remonte doucement. Gestes de barre très doux."]],
+    med:[
+      ["Écoute de foc",3,"Bordée","Les six penons filent ensemble."],
+      ["Point de tire",null,"Au milieu","En lofant, les trois penons verts se lèvent ensemble."],
+      ["Écoute de GV",3,"Bordée","Bôme près de l'axe, penon de chute qui flotte la plupart du temps."],
+      ["Chariot de GV",null,"Au centre","Bôme dans l'axe du bateau."],
+      ["Hale-bas",2,"Juste repris","Il retient la bôme quand tu choques dans une risée."],
+      ["Cunningham",1,"Juste tendu","Il efface les plis du guindant, pas plus."],
+      ["Bordure",3,"Tendue","La GV s'aplatit en bas, le bateau remonte mieux."],
+      ["Équipage",null,"Au rappel, bateau à plat","Une gîte modérée et constante : c'est le moteur du près."],
+      ["Barre",null,"Suis les penons","Lofe quand le vent adonne, abats quand il refuse, pour garder les penons qui filent."]],
+    brise:[
+      ["Écoute de foc",4,"Bordée à fond","Le foc reste plat et stable. Dans les rafales, c'est la GV qui joue, pas le foc."],
+      ["Point de tire",null,"Reculé","Le haut du foc s'ouvre, le bas s'aplatit : moins de puissance, moins de gîte."],
+      ["Écoute de GV",4,"Bordée, jouée dans les rafales","Choque dans la rafale, reborde dès qu'elle passe. Que l'avant de la GV fasseye un peu, c'est normal."],
+      ["Chariot de GV",null,"Sous le vent","Dépuissance sans ouvrir la chute."],
+      ["Hale-bas",4,"Très tendu","Il garde la chute tendue quand tu choques l'écoute."],
+      ["Cunningham",4,"Tendu à fond","Il ramène le creux vers l'avant et ouvre le haut de la GV."],
+      ["Bordure",4,"Tendue à fond","Voile la plus plate possible en bas."],
+      ["Équipage",null,"Rappel maximum","Barreur et équipier au rappel, un peu en arrière : le bateau doit rester le plus à plat possible."],
+      ["Barre",null,"Lofer un peu dans les rafales","Une petite aulofée contrôlée réduit la gîte sans perdre de terrain."]]
+  },
+  travers:{
+    pt:[
+      ["Écoute de foc",1,"Choquée","Choque jusqu'à ce que le foc fasseye au guindant, puis reborde juste assez pour que les penons filent."],
+      ["Point de tire",null,"Avancé","Sinon le haut du foc s'ouvre beaucoup trop une fois l'écoute choquée."],
+      ["Écoute de GV",1,"Choquée","Même méthode : choque jusqu'au faseyement du guindant, puis reborde un peu."],
+      ["Chariot de GV",null,"Sous le vent","En bout de rail."],
+      ["Hale-bas",1,"Légèrement repris","L'écoute tire maintenant vers l'extérieur : c'est le hale-bas qui tient la chute."],
+      ["Cunningham",0,"Relâché","Garde tout le creux."],
+      ["Bordure",1,"Relâchée","Plus de creux = plus de puissance aux allures débridées."],
+      ["Équipage",null,"Au centre, en avant","Le bateau à plat ou très légèrement gîté."],
+      ["Barre",null,"Suis le vent","Lofe un peu dans les molles pour garder de la vitesse."]],
+    med:[
+      ["Écoute de foc",2,"Choquée, penons qui filent","On règle aux penons, comme au près."],
+      ["Point de tire",null,"Avancé","Le haut du foc ne doit pas trop s'ouvrir."],
+      ["Écoute de GV",2,"Choquée à la limite du faseyement","Reprends un peu dès que le guindant commence à fasseyer."],
+      ["Chariot de GV",null,"Sous le vent","En bout de rail."],
+      ["Hale-bas",3,"Tendu","Il empêche la bôme de monter et le haut de la voile de trop vriller."],
+      ["Cunningham",0,"Relâché","Garde la puissance."],
+      ["Bordure",2,"Un peu relâchée","Un peu de creux en bas."],
+      ["Équipage",null,"Au rappel, bateau à plat","Avance-toi si l'arrière traîne, recule si l'étrave plonge."],
+      ["Barre",null,"Abats dans les risées","Abattre un peu transforme la pression en vitesse plutôt qu'en gîte."]],
+    brise:[
+      ["Écoute de foc",2,"Choquée","Réglée aux penons, choquée dans les grosses rafales."],
+      ["Point de tire",null,"Avancé","Garde le haut du foc sous contrôle."],
+      ["Écoute de GV",1,"Choquée, jouée en permanence","Dans les rafales, choque franchement : la GV peut fasseyer à l'avant."],
+      ["Chariot de GV",null,"Sous le vent","En bout de rail."],
+      ["Hale-bas",3,"Tendu, choqué dans les rafales","Trop de hale-bas dans une rafale : la bôme touche l'eau, le bateau part au lof. Choque-en un peu."],
+      ["Cunningham",2,"Un peu tendu","Le creux reste en avant."],
+      ["Bordure",2,"Mi-tendue","Ni trop plate, ni trop creuse."],
+      ["Équipage",null,"Rappel maximum, en arrière","L'étrave doit se dégager de l'eau."],
+      ["Barre",null,"Abats dans les rafales","Abattre dans la rafale garde le bateau debout ; lofer le ferait gîter encore plus."]]
+  },
+  portant:{
+    pt:[
+      ["Tangon",null,"Perpendiculaire au vent, un peu bas","Le spi léger retombe : baisse le tangon pour garder les deux coins du bas à la même hauteur."],
+      ["Écoute de spi",null,"Choquée jusqu'au frisé","Choque jusqu'à voir le guindant friser, reborde un peu. Recommence sans arrêt."],
+      ["Écoute de GV",0,"Choquée","Bôme presque perpendiculaire au vent, sans appuyer sur le hauban."],
+      ["Hale-bas",1,"Légèrement repris","Juste assez pour que la bôme ne monte pas."],
+      ["Cunningham",0,"Relâché","Toute la puissance."],
+      ["Bordure",0,"Relâchée","La GV doit être creuse."],
+      ["Foc",null,"Choqué en grand","Il ne doit pas déventer le spi."],
+      ["Équipage",null,"En avant, un peu de gîte au vent","Le spi sort de l'abri de la GV et la barre s'allège."],
+      ["Barre",null,"Lofer pour la vitesse","Lofe un peu pour garder de la vitesse, abats quand le bateau a accéléré."]],
+    med:[
+      ["Tangon",null,"Perpendiculaire au vent, horizontal","Les deux coins du bas du spi à la même hauteur."],
+      ["Écoute de spi",null,"Jouée en permanence","Le guindant frise légèrement : c'est le bon réglage."],
+      ["Écoute de GV",1,"Choquée","Bôme presque perpendiculaire au vent."],
+      ["Hale-bas",3,"Tendu","Le haut de la GV ne doit pas partir trop en avant : c'est lui qui fait rouler le bateau."],
+      ["Cunningham",0,"Relâché","Toute la puissance."],
+      ["Bordure",1,"Relâchée","De la puissance au portant."],
+      ["Foc",null,"Choqué en grand","Il ne doit pas déventer le spi."],
+      ["Équipage",null,"Au centre ou un peu en arrière","Le bateau à plat."],
+      ["Barre",null,"Suis le spi","Abats dans les risées, lofe dans les molles : l'équipier annonce la pression."]],
+    brise:[
+      ["Tangon",null,"Pas trop en arrière","Un tangon trop reculé rend le spi instable et fait rouler le bateau."],
+      ["Écoute de spi",null,"Un peu plus bordée, coin bas","Un spi un peu plus bordé et tenu bas stabilise le bateau."],
+      ["Écoute de GV",1,"Choquée, prête à choquer encore","Dans une rafale qui couche le bateau, on choque d'abord."],
+      ["Hale-bas",3,"Tendu, choqué dans les rafales","Pour éviter le départ au lof, choque un peu de hale-bas dès que le bateau gîte."],
+      ["Cunningham",0,"Relâché",""],
+      ["Bordure",1,"Relâchée",""],
+      ["Foc",null,"Choqué","Il ne doit pas déventer le spi."],
+      ["Équipage",null,"Les deux en arrière","L'étrave dégagée, le bateau à plat."],
+      ["Barre",null,"Abats dans les rafales","Abattre dans la rafale garde le bateau debout. Évite le plein vent arrière : roulis et empannage involontaire."]]
+  }
+};
+
+/* ---------- A4. Symptômes (chapitre 9) ----------
+     t : le symptôme     s : comment on le voit ou le ressent
+     why : la cause      do : les actions, dans l'ordre */
+const SYMPT = [
+  {t:"Le bateau est ardent, la barre tire fort", s:"Il veut lofer tout seul, tu dois tirer la barre au vent pour tenir le cap.",
+   why:"Trop de gîte ou une GV trop puissante par rapport au foc.",
+   do:["Barreur et équipier au rappel pour remettre le bateau à plat.","Barreur : choquer un peu l'écoute de GV, ou descendre le chariot sous le vent.","Équipier : plus de hale-bas et de cunningham pour aplatir et ouvrir le haut de la GV."]},
+  {t:"Le bateau gîte trop dans les rafales", s:"Il se couche à chaque rafale puis se relève, la barre devient dure.",
+   why:"La puissance n'est pas relâchée au bon moment.",
+   do:["Barreur : choquer l'écoute de GV au moment où la rafale arrive, reborder quand elle passe.","Lofer très légèrement dans la rafale (au près).","Si c'est permanent : dépuissance générale (cunningham, bordure, point de tire reculé)."]},
+  {t:"La barre est molle, le bateau n'accroche pas", s:"Petit temps : aucune sensation, le bateau dérive.",
+   why:"Pas assez de gîte et voiles trop plates ou trop bordées.",
+   do:["Équipier en avant et sous le vent pour donner un peu de gîte.","Choquer un peu foc et GV, relâcher la bordure.","Mouvements très doux à la barre et dans le bateau."]},
+  {t:"Pas de vitesse au près", s:"Le bateau « plante », il avance moins vite que les autres à cap égal.",
+   why:"Trop bordé ou trop près du vent.",
+   do:["Barreur : abattre de quelques degrés pour relancer.","Choquer un peu le foc et la GV (penons rouges qui décrochent ?).","Une fois la vitesse revenue, remonter doucement."]},
+  {t:"Pas de cap au près", s:"Le bateau va vite mais les autres remontent plus haut.",
+   why:"Voiles trop choquées ou trop vrillées.",
+   do:["Équipier : border un peu le foc, vérifier les penons.","Barreur : reprendre l'écoute de GV, ou remonter le chariot au vent.","Vérifier que le point de tire correspond à la force du vent."]},
+  {t:"Le penon de chute de GV disparaît", s:"Le penon au bout de la latte du haut est collé derrière la voile, côté sous le vent.",
+   why:"La chute est trop fermée : l'air décroche à l'arrière de la voile.",
+   do:["Barreur : choquer un peu l'écoute de GV.","Au près dans le petit temps : relâcher le hale-bas.","Le penon doit flotter vers l'arrière la plupart du temps."]},
+  {t:"Le foc fasseye au guindant", s:"L'avant du foc se creuse et bat, les penons verts s'agitent.",
+   why:"Trop près du vent ou foc trop choqué.",
+   do:["Barreur : abattre un peu.","Équipier : border le foc.","Si seul le haut fasseye : avancer le point de tire."]},
+  {t:"Le spi s'effondre", s:"Le guindant se replie complètement et le spi se vide.",
+   why:"Écoute trop choquée, ou tangon trop en arrière pour le cap.",
+   do:["Équipier : reborder l'écoute vite et franchement, puis rechoquer doucement.","Barreur : si le bateau a lofé, abattre un peu.","Vérifier que le tangon est perpendiculaire au penon de hauban."]},
+  {t:"Le bateau roule au vent arrière", s:"Dans la brise, il oscille d'un bord sur l'autre, de plus en plus fort.",
+   why:"Le spi et le haut de la GV oscillent d'un côté à l'autre.",
+   do:["Équipier : border un peu l'écoute de spi et tenir son coin bas.","Avancer un peu le tangon, garder le hale-bas tendu.","Barreur : lofer légèrement pour sortir du plein vent arrière."]},
+  {t:"Le bateau part au lof sous spi", s:"Il gîte, la barre ne répond plus et le bateau remonte au vent sans contrôle.",
+   why:"Trop de puissance dans une rafale, ou trop de gîte.",
+   do:["Équipier : choquer l'écoute de spi et un peu de hale-bas.","Les deux au rappel.","Barreur : abattre dès le début de la rafale, avant que le bateau ne gîte."]},
+  {t:"Le vent passe du côté de la bôme", s:"Au vent arrière, le penon de hauban pointe vers l'avant et du côté opposé à la bôme.",
+   why:"Le bateau est « sur la mauvaise panne » : un empannage involontaire peut arriver.",
+   do:["Barreur : lofer un peu tout de suite pour remettre le vent du bon côté.","Ou annoncer et faire un vrai empannage, contrôlé.","Toujours garder la tête basse quand la bôme peut passer."]}
+];
+
+/* ---------- A5. Les questions du quiz ----------
+     lvl : 0 = bases (posées en premier), 1 = finesses (posées ensuite)
+     q   : la question
+     a   : réponses, LA BONNE EST TOUJOURS LA PREMIÈRE (l'ordre est mélangé à l'affichage)
+     x   : l'explication */
+const Q = [
+  {lvl:0, q:"Qu'est-ce que le guindant d'une voile ?",
+   a:["Son bord avant, le long du mât ou de l'étai","Son bord arrière","Son bord du bas"],
+   x:"Guindant = bord avant ; chute = bord arrière ; bordure = bord du bas."},
+  {lvl:0, q:"Sur le foc, de quel côté est l'intrados ?",
+   a:["Le côté qui reçoit le vent (au vent)","Le côté sous le vent","Le bord avant"],
+   x:"Intrados = face au vent (penons verts ici). Extrados = face sous le vent (penons rouges ici)."},
+  {lvl:0, q:"À quoi sert le penon attaché sur le hauban ?",
+   a:["À voir d'où vient le vent apparent","À régler la tension du foc","À mesurer la vitesse du bateau"],
+   x:"Le penon de hauban flotte dans le sens du vent ressenti à bord : il donne l'allure et sert de repère pour le tangon."},
+  {lvl:0, q:"Au près, le penon vert (intrados) du foc se lève et s'agite. Barreur, que fais-tu ?",
+   a:["J'abats un peu","Je lofe un peu","Je ne touche à rien, c'est normal"],
+   x:"Penon d'intrados qui décroche = trop près du vent pour ce réglage. Abats un peu, ou l'équipier borde."},
+  {lvl:0, q:"Le penon rouge (extrados) du foc décroche et s'enroule. Équipier, que fais-tu ?",
+   a:["Je choque un peu l'écoute de foc","Je borde l'écoute de foc","Je tends la drisse"],
+   x:"Penon d'extrados qui décroche = foc trop bordé pour ce cap. Choque, ou le barreur lofe un peu."},
+  {lvl:0, q:"« La barre va vers le penon qui décroche. » Le penon vert, côté au vent, s'agite : de quel côté pousses-tu la barre ?",
+   a:["Côté au vent : le bateau abat","Côté sous le vent : le bateau lofe","Je la laisse au centre"],
+   x:"Barre vers le penon au vent = le bateau abat, et le penon vert se remet à filer."},
+  {lvl:0, q:"À quoi sert le hale-bas aux allures portantes ?",
+   a:["À empêcher la bôme de monter et le haut de la GV de trop vriller","À border la GV","À tendre le guindant"],
+   x:"Au portant, l'écoute tire vers l'extérieur : c'est le hale-bas qui tient la chute."},
+  {lvl:0, q:"Sous spi, que veut dire « le guindant frise » ?",
+   a:["Le bord au vent du spi commence à se replier un peu : le réglage est juste","Le spi est déchiré","Le spi est trop bordé"],
+   x:"Friser, c'est le bord du spi qui se replie sur quelques centimètres. C'est le signe d'un spi réglé à la limite : c'est ce qu'on cherche."},
+  {lvl:0, q:"Sous spi, comment l'équipier règle-t-il l'écoute ?",
+   a:["Il choque jusqu'à voir le guindant friser, puis reprend un peu","Il borde à fond et taque","Il la choque au maximum"],
+   x:"Le bon réglage est juste avant que le spi ne s'effondre. Et on recommence sans arrêt."},
+  {lvl:0, q:"Où doit être le tangon de spi ?",
+   a:["Perpendiculaire au vent apparent (au penon de hauban), à peu près horizontal","Le long de l'étai","Toujours le plus en arrière possible"],
+   x:"Tangon perpendiculaire au penon de hauban, coins du bas du spi à la même hauteur."},
+  {lvl:0, q:"Brise, au près : où mets-tu le point de tire du foc ?",
+   a:["Reculé, pour ouvrir le haut du foc","Avancé, pour plus de puissance","Toujours au milieu"],
+   x:"Le point de tire dépend du vent : avancé dans le petit temps, au milieu dans le médium, reculé dans la brise."},
+  {lvl:0, q:"Au près dans la brise, une grosse rafale couche le bateau. Premier réflexe du barreur ?",
+   a:["Choquer l'écoute de GV, puis la reborder après la rafale","Border le foc à fond","Abattre franchement"],
+   x:"La GV est l'accélérateur : on la choque dans la rafale. Au près, abattre ferait encore plus gîter."},
+  {lvl:0, q:"Au vent arrière, tu remarques que le vent arrive maintenant du même côté que la bôme. Que risques-tu ?",
+   a:["Un empannage involontaire : je lofe un peu tout de suite","Rien de particulier","Un départ au lof"],
+   x:"Vent du côté de la bôme = mauvaise panne. La bôme peut passer brutalement de l'autre côté : lofe, ou fais un vrai empannage contrôlé."},
+  {lvl:0, q:"Quelle est la différence entre descendre le chariot sous le vent et choquer l'écoute de GV ?",
+   a:["Le chariot écarte la bôme sans ouvrir le haut de la voile ; l'écoute écarte la bôme et ouvre le haut","Aucune, les deux font exactement la même chose","Le chariot ouvre le haut de la voile, l'écoute non"],
+   x:"Le chariot change seulement l'angle de la bôme. L'écoute change l'angle ET la tension de la chute : choquée, le haut s'ouvre (vrillage)."},
+  {lvl:1, q:"Médium, au près : tu lofes doucement et le penon vert du HAUT se lève avant ceux du bas. Que règles-tu ?",
+   a:["J'avance le point de tire","Je recule le point de tire","Je tends la drisse de foc"],
+   x:"En médium, les trois doivent se lever ensemble. Le haut d'abord = haut trop ouvert : avance le point de tire."},
+  {lvl:1, q:"Médium, au près : c'est le penon vert du BAS qui se lève en premier. Que règles-tu ?",
+   a:["Je recule le point de tire","J'avance le point de tire","Je choque la GV"],
+   x:"Le bas d'abord = haut trop fermé. Recule le point de tire pour ouvrir le haut."},
+  {lvl:1, q:"Brise, point de tire reculé : seul le penon vert du haut se lève un peu avant les autres. Faut-il corriger ?",
+   a:["Non : en brise, le haut ouvert est voulu pour dépuissancer","Oui, avancer le point de tire","Oui, border le foc à fond"],
+   x:"Dans la brise, on cherche justement à ouvrir le haut du foc pour moins gîter."},
+  {lvl:1, q:"Au près, sans toucher la barre, le penon de hauban remonte vers l'avant et le foc commence à fasseyer. Que se passe-t-il ?",
+   a:["Une refusante : j'abats pour retrouver le réglage","Une adonnante : je lofe","Une rafale : je borde"],
+   x:"Le vent a tourné vers l'avant (refusante) : abats pour que les penons filent à nouveau."},
+  {lvl:1, q:"Sous spi, le guindant frise d'abord tout en haut. Que fais-tu ?",
+   a:["Je baisse le tangon","Je monte le tangon","Je borde le bras"],
+   x:"Frisé en haut d'abord = tangon trop haut. Frisé en bas d'abord = tangon trop bas."},
+  {lvl:1, q:"Au près dans le petit temps, le penon de chute du haut de la GV reste collé derrière la voile. Que fais-tu ?",
+   a:["Je choque un peu l'écoute de GV ou le hale-bas","Je borde davantage","Je tends le cunningham"],
+   x:"Le penon caché indique une chute trop fermée : il faut ouvrir un peu le haut de la voile."},
+  {lvl:1, q:"Dans la brise, juste avant d'abattre à la bouée au vent, que choques-tu en plus de l'écoute de GV ?",
+   a:["Un peu de hale-bas","Le cunningham au maximum","Rien, je garde tout bordé"],
+   x:"Trop de hale-bas en abattant dans la brise : la bôme touche l'eau et le bateau part au lof."},
+  {lvl:1, q:"Au vent arrière dans la brise, le bateau roule de plus en plus. Quelle correction ?",
+   a:["Border un peu le spi, tenir son coin bas et garder le hale-bas tendu","Choquer le spi et le hale-bas en grand","Monter le tangon au maximum"],
+   x:"Un spi un peu bordé et tenu bas, et une GV dont le haut ne part pas en avant, stabilisent le bateau. Lofer un peu aide aussi."},
+  {lvl:1, q:"Petit temps : le bateau manque de puissance et accélère mal. Quel réglage va dans ce sens ?",
+   a:["Relâcher un peu la bordure et le cunningham","Tendre le cunningham à fond","Reculer le point de tire du foc"],
+   x:"Des voiles un peu plus creuses donnent de la puissance pour relancer le bateau dans le petit temps."}
+];
+
+
+/* =============================================================================
+   PARTIE B — LE FONCTIONNEMENT
+   ============================================================================= */
+
+/* ---------- B1. Petits outils ---------- */
+const $ = id => document.getElementById(id);
+const rad = d => d * Math.PI / 180;
+const r1 = n => Math.round(n * 10) / 10;           // arrondi pour des chemins SVG lisibles
+const shuffle = list => {                           // mélange (Fisher-Yates)
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+};
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Groupe de boutons « exclusif » : un seul enfoncé à la fois (aria-pressed)
+function pressOnly(group, btn){
+  group.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+}
+// Branche un groupe de boutons : data-<key> → fonction appelée avec la valeur
+function onSeg(id, key, fn){
+  $(id).addEventListener("click", e => {
+    const b = e.target.closest(`[data-${key}]`); if (!b) return;
+    pressOnly($(id), b); fn(b.dataset[key]);
+  });
+}
+
+/* ---------- B2. Le lexique et les mots soulignés ----------
+   Chaque mot technique trouvé dans le texte devient un lien vers sa
+   définition (une seule fois par bloc, pour ne pas surcharger). */
+const ALIAS = new Map();
+GL.forEach(g => g.al.forEach(a => ALIAS.set(a.toLowerCase(), g.id)));
+const GL_BY_ID = Object.fromEntries(GL.map(g => [g.id, g]));
+const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");   // (le tiret n'a pas à être échappé ici)
+// Les formes les plus longues d'abord (« point d'amure » avant « point »)
+const TERM_RE = new RegExp("(?<![\\p{L}'’-])(" + [...ALIAS.keys()].sort((a, b) => b.length - a.length).map(esc).join("|") + ")(?![\\p{L}])", "giu");
+
+function autolink(root){
+  if (!root) return;
+  const used = new Set();
+  root.querySelectorAll("a.term").forEach(a => used.add(a.getAttribute("href").slice(5)));
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => n.parentElement.closest("a,button,h1,h2,h3,svg,label,summary,output,b,dfn,.chip,.lvl,.k,.v,.ends")
+      ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const text = node.nodeValue;
+    const frag = document.createDocumentFragment();
+    let last = 0, any = false;
+    for (const m of text.matchAll(TERM_RE)) {
+      const id = ALIAS.get(m[1].toLowerCase());
+      if (!id || used.has(id)) continue;
+      used.add(id); any = true;
+      frag.append(text.slice(last, m.index));
+      const a = document.createElement("a");
+      a.className = "term"; a.href = "#lex-" + id; a.title = GL_BY_ID[id].d; a.textContent = m[1];
+      frag.append(a);
+      last = m.index + m[1].length;
+    }
+    if (!any) return;
+    frag.append(text.slice(last));
+    node.replaceWith(frag);
+  });
+}
+
+$("lex").innerHTML = GL.slice().sort((a, b) => a.n.localeCompare(b.n, "fr"))
+  .map(g => `<div class="lexi" id="lex-${g.id}"><dfn>${g.n}</dfn><span>${g.d}</span></div>`).join("");
+
+// Clic sur un mot souligné : on va à sa définition, qui brille un instant
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href^="#lex-"]');
+  if (!a) return;
+  e.preventDefault();
+  const card = document.getElementById(a.getAttribute("href").slice(1));
+  if (!card) return;
+  card.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+  card.classList.add("flash");
+  setTimeout(() => card.classList.remove("flash"), 1800);
+});
+
+/* ---------- B3. Dessins communs ----------
+   sailPath : une voile vue d'en haut = une courbe qui part du mât (x,y),
+   longueur L, ouverte d'un angle « a » (degrés) vers sous le vent (la droite),
+   avec un creux « d » (0 = plate, 0.2 = très creuse) placé à « p » de la longueur. */
+function sailPath(x, y, a, L, d, p){
+  p = p || 0.45;
+  const ux = Math.sin(rad(a)), uy = Math.cos(rad(a));   // direction de la corde
+  const nx = Math.cos(rad(a)), ny = -Math.sin(rad(a));  // côté sous le vent
+  const ex = x + ux * L, ey = y + uy * L;               // point d'écoute
+  const k = d * L * 1.5;                                 // profondeur du creux
+  const c1x = x + ux * L * p * 0.6 + nx * k, c1y = y + uy * L * p * 0.6 + ny * k;
+  const c2x = x + ux * L * (p + (1 - p) * 0.45) + nx * k, c2y = y + uy * L * (p + (1 - p) * 0.45) + ny * k;
+  return `M${r1(x)},${r1(y)} C${r1(c1x)},${r1(c1y)} ${r1(c2x)},${r1(c2y)} ${r1(ex)},${r1(ey)}`;
+}
+// Flèche (pour le vent) entre deux points
+function arrow(x1, y1, x2, y2, color, w){
+  const a = Math.atan2(y2 - y1, x2 - x1), h = 7 + (w || 2);
+  const p1 = [x2 - h * Math.cos(a - .45), y2 - h * Math.sin(a - .45)], p2 = [x2 - h * Math.cos(a + .45), y2 - h * Math.sin(a + .45)];
+  return `<g stroke="${color || "var(--navy)"}" fill="${color || "var(--navy)"}" stroke-width="${w || 2}" opacity=".8"><line x1="${r1(x1)}" y1="${r1(y1)}" x2="${r1(x2)}" y2="${r1(y2)}"/>
+    <path d="M${r1(x2)},${r1(y2)} L${r1(p1[0])},${r1(p1[1])} L${r1(p2[0])},${r1(p2[1])} Z" stroke-width="1"/></g>`;
+}
+const windArrow = (x, y, len) => arrow(x, y, x, y + len);
+const hullPath = () => "M0,-58 C16,-36 20,6 15,52 L-15,52 C-20,6 -16,-36 0,-58 Z";
+// Petit texte avec trait de rappel (étiquette d'un dessin)
+const tag = (tx, ty, px, py, txt, anchor) => `<line x1="${tx}" y1="${ty}" x2="${px}" y2="${py}" stroke="var(--muted)" stroke-width="1"/>
+  <circle cx="${px}" cy="${py}" r="2.5" fill="var(--muted)"/>
+  <text x="${tx}" y="${ty - 4}" font-size="13" font-weight="700" fill="var(--ink)" text-anchor="${anchor || "middle"}">${txt}</text>`;
+
+/* Mini-schéma à deux cases (bases + cartes des commandes).
+   type : "angle", "depth" (creux), "draft" (position du creux), "twist" (vrillage), "pole" (tangon) */
+function mini(type, la, lb){
+  const my = type === "pole" ? 80 : 22;   // mât plus bas pour le tangon, qui part vers l'avant
+  function caption(label){
+    const [l1, l2] = label.split(" : ");
+    return l2 ? `<text x="65" y="106" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">${l1}</text><text x="65" y="120" text-anchor="middle" font-size="11" fill="var(--muted)">${l2}</text>`
+              : `<text x="65" y="110" text-anchor="middle" font-size="11" fill="var(--muted)">${l1}</text>`;
+  }
+  const panel = (ox, label, drawn) => `<g transform="translate(${ox},0)">
+    <line x1="30" y1="10" x2="30" y2="94" stroke="var(--line)" stroke-dasharray="3 3"/>
+    ${drawn}<circle cx="30" cy="${my}" r="4" fill="var(--hull)"/>${caption(label)}</g>`;
+  const s = (a, d, p, dash) => `<path d="${sailPath(30, 22, a, 62, d, p)}" fill="none" stroke="var(--navy)" stroke-width="3" stroke-linecap="round"${dash ? ' stroke-dasharray="5 4" opacity=".75"' : ""}/>`;
+  let A = "", B = "";
+  if (type === "angle"){ A = s(8, .1); B = s(38, .1); }
+  if (type === "depth"){ A = s(18, .04); B = s(18, .16); }
+  if (type === "draft"){
+    // point orange = endroit le plus creux de la voile
+    const dot = p => { const L = 62, a = 18, k = .13 * L * 1.1;
+      return `<circle cx="${r1(30 + Math.sin(rad(a)) * L * p + Math.cos(rad(a)) * k)}" cy="${r1(22 + Math.cos(rad(a)) * L * p - Math.sin(rad(a)) * k)}" r="4" fill="var(--orange)"/>`; };
+    A = s(18, .13, .18) + dot(.3); B = s(18, .13, .75) + dot(.68);
+  }
+  if (type === "twist"){ A = s(12, .1) + s(17, .1, .45, true); B = s(12, .1) + s(40, .1, .45, true); }
+  if (type === "pole"){
+    const pole = a => `<line x1="30" y1="${my}" x2="${r1(30 + 50 * Math.sin(rad(a)))}" y2="${r1(my - 50 * Math.cos(rad(a)))}" stroke="var(--orange)" stroke-width="3.5" stroke-linecap="round"/>`
+      + `<text x="30" y="8" text-anchor="middle" font-size="9" fill="var(--muted)">avant ↑</text>`;
+    A = pole(80); B = pole(35);
+  }
+  const bg = type === "pole" ? "" : windArrow(120, 4, 20);
+  return `<svg viewBox="0 0 240 126" role="img" aria-label="${la} / ${lb}">${bg}${panel(0, la, A)}${panel(120, lb, B)}</svg>`;
+}
+$("fig-angle").innerHTML = mini("angle", "bordée", "choquée");
+$("fig-depth").innerHTML = mini("depth", "plate", "creuse");
+$("fig-twist").innerHTML = mini("twist", "haut fermé", "haut ouvert : vrillé");
+
+
+/* ---------- B4. Chapitre 1 : le bateau vu de côté, annoté ---------- */
+function boatSide(){
+  // L'étai va du haut du mât (332,70) à l'étrave (535,318) : point à la hauteur y
+  const stayX = y => 332 + 203 * (y - 70) / 248;
+  let h = `<rect x="0" y="345" width="640" height="55" fill="var(--navy)" opacity=".12"/>`
+    // coque, quille, safran
+    + `<path d="M90,318 L540,318 Q528,350 480,356 L150,356 Q105,350 90,318 Z" fill="var(--surface)" stroke="var(--hull)" stroke-width="2"/>`
+    + `<path d="M300,356 L312,394 L352,394 L350,356 Z" fill="var(--hull)"/><path d="M122,352 L114,388 L134,388 L140,352 Z" fill="var(--hull)"/>`
+    // grand-voile, lattes, mât, bôme, hale-bas
+    + `<path d="M328,34 L328,268 L145,272 Q200,150 328,34 Z" fill="var(--sail)" stroke="var(--navy)" stroke-width="2"/>`
+    + [[300,90],[262,150],[222,210]].map(([x,y]) => `<line x1="${x}" y1="${y}" x2="${x + 28}" y2="${y}" stroke="var(--line)" stroke-width="3"/>`).join("")
+    + `<line x1="330" y1="28" x2="330" y2="318" stroke="var(--hull)" stroke-width="6"/>`
+    + `<line x1="330" y1="272" x2="140" y2="276" stroke="var(--hull)" stroke-width="6" stroke-linecap="round"/>`
+    + `<line x1="332" y1="308" x2="292" y2="275" stroke="var(--hull)" stroke-width="2"/>`
+    // étai, hauban, foc
+    + `<line x1="332" y1="70" x2="535" y2="318" stroke="var(--hull)" stroke-width="1.5"/>`
+    + `<line x1="330" y1="70" x2="316" y2="318" stroke="var(--hull)" stroke-width="1.5" stroke-dasharray="6 3"/>`
+    + `<path d="M360,104 L525,306 L405,302 Q370,200 360,104 Z" fill="var(--sail)" stroke="var(--navy)" stroke-width="2"/>`;
+  // penons du foc (vert = intrados, rouge = extrados) et penon de hauban (orange)
+  [165, 210, 255].forEach(y => {
+    const x = stayX(y) - 26;
+    h += `<path d="M${r1(x)},${y} q6,-3 12,0 t12,0" fill="none" stroke="var(--intra)" stroke-width="3" stroke-linecap="round"/>`
+       + `<path d="M${r1(x)},${y + 6} q6,-3 12,0 t12,0" fill="none" stroke="var(--extra)" stroke-width="3" stroke-dasharray="4 2" stroke-linecap="round"/>`;
+  });
+  h += `<path d="M327,112 q-7,-3 -13,0 t-13,0" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/>`;
+  // étiquettes
+  h += `<text x="235" y="215" font-size="17" font-weight="800" fill="var(--navy)" text-anchor="middle">Grand-voile</text>`
+     + `<text x="440" y="270" font-size="17" font-weight="800" fill="var(--navy)" text-anchor="middle">Foc</text>`
+     + tag(262, 30, 327, 36, "tête")
+     + tag(110, 128, 216, 152, "chute")
+     + tag(70, 262, 147, 272, "point d'écoute")
+     + tag(235, 300, 240, 274, "bôme")
+     + tag(215, 258, 240, 266, "bordure")
+     + tag(270, 340, 305, 290, "hale-bas")
+     + tag(130, 92, 302, 112, "penon de hauban")
+     + tag(372, 54, 345, 60, "mât", "start")
+     + tag(470, 120, 400, 152, "étai", "start")
+     + tag(520, 196, stayX(212) - 1, 212, "guindant du foc", "start")
+     + tag(560, 255, stayX(250) - 14, 252, "penons", "start")
+     + tag(585, 300, 524, 305, "point d'amure", "middle")
+     + tag(330, 386, 330, 375, "quille", "middle");
+  $("figBoat").innerHTML = h;
+}
+boatSide();
+
+
+/* ---------- B5. Chapitre 3 : le penon de hauban ----------
+   Le bateau est fixe, étrave vers le haut, bôme à droite (tribord).
+   th = angle d'où vient le vent, mesuré depuis l'étrave, par bâbord (la gauche).
+   Au-delà de 180°, le vent passe du côté de la bôme : mauvaise panne. */
+const hb = {th:45};
+function hbAllure(th){
+  if (th < 30)  return ["bad", "Face au vent", "Le vent vient presque de face : les voiles fasseyent, le bateau ne peut pas avancer. Abats."];
+  if (th < 55)  return ["ok", "Près", "Le penon pointe vers l'arrière, en diagonale. Le bateau remonte au vent. C'est le penon du foc qui permet ensuite de régler finement."];
+  if (th < 75)  return ["ok", "Bon plein", "Le penon pointe vers l'arrière et vers l'extérieur. Voiles un peu choquées."];
+  if (th < 110) return ["ok", "Travers", "Le penon pointe sur le côté, perpendiculaire au bateau. Voiles choquées à moitié."];
+  if (th < 160) return ["ok", "Largue, grand largue", "Le penon pointe vers l'avant, en diagonale. C'est une allure de spi : le tangon se règle perpendiculaire au penon."];
+  if (th <= 180) return ["mid", "Vent arrière", "Le penon pointe vers l'étrave. Allure instable : surveille que le vent ne passe pas du côté de la bôme."];
+  return ["bad", "Mauvaise panne !", "Le vent arrive du même côté que la bôme : risque d'empannage involontaire. Lofe tout de suite, ou fais un vrai empannage contrôlé."];
+}
+function hbUpdate(){
+  const th = hb.th, cx = 150, cy = 178, k = 1.35;
+  const sx = -Math.sin(rad(th)), sy = -Math.cos(rad(th));   // direction d'où vient le vent
+  const phi = Math.atan2(-sy, -sx) * 180 / Math.PI;          // direction où va le vent (et le penon)
+  const flapping = th < 30;
+  const boom = flapping ? 0 : th > 180 ? 85 : Math.min(85, (th - 15) / 2);
+  const jibA = flapping ? 0 : Math.min(70, boom * .9 + 4);
+  const sails = flapping
+    ? `<path class="flap" d="M0,-16 q4,10 0,20 q-4,10 0,20 q4,10 0,20" fill="none" stroke="var(--hull)" stroke-width="3"/>
+       <path class="flap" d="M0,-56 q4,8 0,16 q-4,8 0,16" fill="none" stroke="var(--navy)" stroke-width="3"/>`
+    : `<path d="${sailPath(0, -16, boom, 56, .1)}" fill="none" stroke="var(--hull)" stroke-width="3.5" stroke-linecap="round"/>
+       <path d="${sailPath(0, -56, jibA, 38, .1)}" fill="none" stroke="var(--navy)" stroke-width="3" stroke-linecap="round"/>`;
+  let h = arrow(cx + sx * 148, cy + sy * 148, cx + sx * 102, cy + sy * 102, "var(--navy)", 4)
+    + `<text x="${r1(cx + sx * 132 + (sx > .3 ? -18 : 18))}" y="${r1(cy + sy * 132 + 4)}" font-size="12" font-weight="700" fill="var(--navy)" text-anchor="middle">vent</text>`
+    + `<g transform="translate(${cx},${cy}) scale(${k})"><path d="${hullPath()}" fill="var(--surface)" stroke="var(--hull)" stroke-width="2"/>
+       <line x1="0" y1="-16" x2="-13" y2="-6" stroke="var(--hull)" stroke-width="1"/><line x1="0" y1="-16" x2="13" y2="-6" stroke="var(--hull)" stroke-width="1"/>
+       ${sails}<circle cx="0" cy="-16" r="3.5" fill="var(--hull)"/></g>`;
+  // un penon sur chaque hauban
+  [[-13, -6], [13, -6]].forEach(([x, y]) => {
+    h += `<g transform="translate(${r1(cx + x * k)},${r1(cy + y * k)}) rotate(${r1(phi)})"><path class="tt wool flow" d="M0,0 q7,-3 14,0 t14,0"/></g>`;
+  });
+  h += `<text x="150" y="324" font-size="11" fill="var(--muted)" text-anchor="middle">bateau vu d'en haut, l'avant en haut</text>`;
+  $("hbView").innerHTML = h;
+  const [cls, name, txt] = hbAllure(th);
+  $("hbThO").textContent = th > 180 ? "côté bôme" : th + "° de l'étrave";
+  $("hbVerdict").innerHTML = `<span class="chip ${cls}">${name}</span><p>${txt}</p>`;
+  autolink($("hbVerdict"));
+}
+$("hbTh").addEventListener("input", e => { hb.th = +e.target.value; hbUpdate(); });
+
+
+/* ---------- B6. Chapitre 4 : le foc en coupe (3 cas) ---------- */
+function flowPanel(kind){
+  // Profil du foc vu d'en haut : guindant à gauche, chute à droite ; intrados = au-dessus
+  const sail = `<path d="M50,60 Q120,104 192,118" fill="none" stroke="var(--navy)" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="60" r="4" fill="var(--navy)"/>`;
+  const windAng = {ok:38, lift:8, stall:66}[kind];
+  let w = "";
+  [0, 1, 2].forEach(i => {
+    const x0 = 6 + i * 2, y0 = 6 + i * 18, L = 34;
+    w += arrow(x0, y0, x0 + L * Math.cos(rad(windAng)), y0 + L * Math.sin(rad(windAng)), "var(--navy)", 2);
+  });
+  const smooth = `<path d="M44,44 Q118,90 200,102" fill="none" stroke="var(--muted)" stroke-dasharray="4 4"/><path d="M60,78 Q122,122 196,136" fill="none" stroke="var(--muted)" stroke-dasharray="4 4"/>`;
+  const swirl = (x, y) => `<path d="M${x},${y} c-10,-10 10,-20 16,-8 c6,10 -9,16 -11,7" fill="none" stroke="var(--orange)" stroke-width="2"/>`;
+  const tf = (x, y, rot, cls, dash) => `<g transform="translate(${x},${y}) rotate(${rot})"><path d="M0,0 q7,-3 14,0 t14,0" fill="none" stroke="var(--${cls})" stroke-width="3.5" stroke-linecap="round"${dash ? ' stroke-dasharray="5 3"' : ""}/></g>`;
+  const curl = (x, y) => `<path d="M${x},${y} c8,4 10,14 2,18 c-6,3 -10,-4 -4,-7" fill="none" stroke="var(--extra)" stroke-width="3.5" stroke-dasharray="5 3" stroke-linecap="round"/>`;
+  let body = sail, cap;
+  if (kind === "ok"){
+    body += smooth + tf(74, 64, 30, "intra") + tf(76, 80, 30, "extra", true);
+    cap = `<b>Bien réglé.</b> L'air glisse des deux côtés : le penon <span class="vert">vert</span> et le penon <span class="rouge">rouge</span> filent vers l'arrière.`;
+  } else if (kind === "lift"){
+    body += swirl(66, 52) + tf(74, 64, -80, "intra") + tf(76, 80, 30, "extra", true);
+    cap = `<b>Penon <span class="vert">vert</span> qui se lève.</b> Le vent arrive trop de face sur le guindant : l'air tourbillonne côté intrados. Le barreur abat, ou l'équipier borde.`;
+  } else {
+    body += swirl(122, 112) + swirl(160, 128) + tf(74, 64, 30, "intra") + curl(76, 80);
+    cap = `<b>Penon <span class="rouge">rouge</span> qui décroche.</b> Le foc est trop fermé pour ce vent : l'air ne suit plus l'extrados et tourbillonne. Le barreur lofe, ou l'équipier choque.`;
+  }
+  return `<figure class="figbox"><svg viewBox="0 0 220 160" role="img" aria-label="Foc en coupe">${w}${body}
+    <text x="200" y="40" font-size="11" fill="var(--intra)" text-anchor="end" font-weight="700">intrados</text>
+    <text x="120" y="152" font-size="11" fill="var(--extra)" text-anchor="middle" font-weight="700">extrados</text></svg>
+    <figcaption>${cap}</figcaption></figure>`;
+}
+$("flowFigs").innerHTML = flowPanel("ok") + flowPanel("lift") + flowPanel("stall");
+
+
+/* ---------- B7. Chapitre 4 : le simulateur du foc ----------
+   Modèle simplifié mais fidèle aux règles de lecture :
+     angle d'attaque = angle au vent apparent − angle d'écoute
+     - entre 9° et 19° : le penon file
+     - en dessous de 9° : le penon d'INTRADOS (vert) se lève
+     - au-dessus de 19° : le penon d'EXTRADOS (rouge) décroche
+     - en dessous de 3° : le foc fasseye
+   Le point de tire décale l'angle entre le haut et le bas du foc. Le bon
+   point de tire dépend du vent : avancé (petit temps), milieu (médium),
+   reculé (brise, où un haut un peu ouvert est voulu). */
+const LEAD = {avant:-5, centre:0, arriere:5};
+const LEAD_NAME = {avant:"avancé", centre:"au milieu", arriere:"reculé"};
+const IDEAL = {pt:"avant", med:"centre", brise:"arriere"};
+const WHY = {pt:"du creux en bas du foc pour la puissance", med:"les trois penons verts se lèvent ensemble", brise:"le haut du foc s'ouvre pour dépuissancer"};
+const HEIGHTS = [{n:"haut", f:.24, h:1}, {n:"milieu", f:.5, h:.5}, {n:"bas", f:.76, h:0}];
+const jib = {wa:32, sh:18, lead:"centre", wind:"med"};
+
+function jibTop(){
+  const g = `<g transform="translate(90,120) rotate(${jib.wa})">
+    <path d="${hullPath()}" fill="var(--surface)" stroke="var(--hull)" stroke-width="2"/>
+    <path d="${sailPath(0, -16, Math.max(3, jib.sh * .6), 52, .08)}" fill="none" stroke="var(--hull)" stroke-width="3" stroke-linecap="round"/>
+    <path d="${sailPath(0, -56, jib.sh, 40, .1)}" fill="none" stroke="var(--navy)" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="0" cy="-16" r="3.5" fill="var(--hull)"/></g>`;
+  $("jibTop").innerHTML = windArrow(60, 4, 30) + windArrow(90, 4, 30) + windArrow(120, 4, 30)
+    + `<text x="90" y="205" text-anchor="middle" font-size="12" fill="var(--muted)">vu d'en haut</text>` + g;
+}
+function jibSide(states, flapping){
+  const head = [78, 14], tack = [40, 300], clew = [236, 290];
+  let h = `<path d="M${head} L${tack} L${clew} Q170,140 ${head} Z" fill="var(--sail)" stroke="var(--navy)" stroke-width="2"/>
+    <text x="150" y="312" font-size="12" fill="var(--muted)" text-anchor="middle">le foc vu de côté</text>`;
+  if (flapping){
+    const pts = [];
+    for (let i = 0; i <= 16; i++){ const f = .06 + i * .055; pts.push(r1(head[0] + (tack[0] - head[0]) * f + (i % 2 ? 9 : 1)) + "," + r1(head[1] + (tack[1] - head[1]) * f)); }
+    h += `<polyline class="flap" points="${pts.join(" ")}" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  }
+  HEIGHTS.forEach((ht, i) => {
+    const x = head[0] + (tack[0] - head[0]) * ht.f + 26 + ht.f * 8, y = head[1] + (tack[1] - head[1]) * ht.f;
+    const st = states[i];
+    h += `<g transform="translate(${r1(x)},${r1(y)})"><path class="tt ww ${st.w}" d="M0,0 q8,-3 16,0 t16,0"/></g>`
+       + `<g transform="translate(${r1(x)},${r1(y + 8)})"><path class="tt lw ${st.l}" d="M0,0 q8,-3 16,0 t16,0"/></g>`
+       + `<text x="${r1(x + 40)}" y="${r1(y - 6)}" font-size="11" fill="var(--muted)">${ht.n}</text>`;
+  });
+  $("jibSide").innerHTML = h;
+}
+
+function jibUpdate(){
+  const aoa = jib.wa - jib.sh;
+  // décalage haut/bas : le point de tire par rapport au réglage idéal pour ce vent
+  // (+2 en brise : au bon réglage, le haut est volontairement un peu ouvert)
+  const t = LEAD[jib.lead] - LEAD[IDEAL[jib.wind]] + (jib.wind === "brise" ? 2 : 0);
+  const states = HEIGHTS.map(ht => {
+    const a = aoa - t * (2 * ht.h - 1);
+    return { a, w: a < 9 ? "lift" : "flow", l: a > 19 ? "stall" : "flow" };
+  });
+  const L = states.filter(s => s.w === "lift").length, S = states.filter(s => s.l === "stall").length;
+  const flapping = aoa < 3;
+  const leadOk = jib.lead === IDEAL[jib.wind];
+  jibTop(); jibSide(states, flapping);
+  $("jWaO").textContent = jib.wa + "°";
+  $("jShO").textContent = jib.sh <= 10 ? "très bordée" : jib.sh <= 17 ? "bordée" : jib.sh <= 25 ? "un peu choquée" : "choquée";
+
+  let level = "bad", what, barreur, equipier;
+  if (flapping){
+    what = "Le foc fasseye : son guindant se creuse et bat.";
+    barreur = "Abats franchement."; equipier = "Borde le foc.";
+  } else if (leadOk && S === 0 && (L === 0 || (jib.wind === "brise" && L === 1 && states[0].w === "lift"))){
+    level = "ok";
+    what = L === 0 ? "Les six penons filent : le foc est bien réglé pour ce cap et ce vent."
+                   : "Seul le penon vert du haut se lève : en brise, c'est voulu. Le haut du foc est ouvert pour dépuissancer.";
+    barreur = "Garde ce cap, et suis les penons au moindre changement de vent."; equipier = "Ne touche à rien, mais garde l'écoute en main.";
+  } else if (L === 3 || (L > 0 && leadOk)){
+    what = "Les penons verts (intrados) se lèvent : tu es trop près du vent pour ce réglage.";
+    barreur = "Abats un peu."; equipier = "Ou borde un peu.";
+  } else if (S === 3 || (S > 0 && leadOk)){
+    what = "Les penons rouges (extrados) décrochent : le foc est trop bordé pour ce cap.";
+    barreur = "Lofe un peu."; equipier = "Ou choque un peu.";
+  } else if (L === 0 && S === 0){
+    level = "mid";
+    what = "Les penons filent à ce cap, mais le point de tire n'est pas adapté à ce vent : au moindre écart, ils décrocheront de façon inégale.";
+    barreur = "Garde ce cap."; equipier = `Mets le point de tire ${LEAD_NAME[IDEAL[jib.wind]]}.`;
+  } else if (states[0].a < states[2].a){
+    what = "Le haut du foc décroche avant le bas : pour ce vent, le haut est trop ouvert.";
+    barreur = "Le cap n'y changera rien : c'est la forme du foc."; equipier = "Avance le point de tire.";
+  } else {
+    what = "Le bas du foc décroche avant le haut : pour ce vent, le haut est trop fermé.";
+    barreur = "Le cap n'y changera rien : c'est la forme du foc."; equipier = "Recule le point de tire.";
+  }
+  const label = {ok:"✓ Réglé", mid:"Presque", bad:"À corriger"}[level];
+  let extra = `<p class="note ${leadOk ? "reg" : "club"}"><b>Point de tire pour ${VENT[jib.wind].toLowerCase()} · </b>${LEAD_NAME[IDEAL[jib.wind]]} : ${WHY[jib.wind]}. ${leadOk ? "✓ C'est ton réglage." : "Ce n'est pas ton réglage actuel."}</p>`;
+  if (jib.wa < 25) extra += `<p class="note trap"><b>Attention · </b>à moins de 25° du vent apparent, même bien réglé, le bateau n'avance plus.</p>`;
+  else if (jib.wa > 48) extra += `<p class="note reg"><b>Remarque · </b>tu n'es plus vraiment au près : choque aussi la grand-voile.</p>`;
+  $("jVerdict").innerHTML = `<span class="chip ${level}">${label}</span>
+    <p class="what">${what}</p>
+    <div class="roles"><div class="role"><b>Barreur</b><p>${barreur}</p></div><div class="role"><b>Équipier</b><p>${equipier}</p></div></div>${extra}`;
+}
+$("jWa").addEventListener("input", e => { jib.wa = +e.target.value; jibUpdate(); });
+$("jSh").addEventListener("input", e => { jib.sh = +e.target.value; jibUpdate(); });
+onSeg("jLead", "lead", v => { jib.lead = v; jibUpdate(); });
+onSeg("jWind", "w", v => { jib.wind = v; jibUpdate(); });
+
+
+/* ---------- B8. Chapitre 5 : la grand-voile et le chariot ----------
+   Bateau vu d'en haut, au près, vent venant de l'avant gauche.
+   - le chariot change l'angle de la bôme, sans ouvrir le haut ;
+   - l'écoute change l'angle de la bôme ET ouvre le haut (vrillage).
+   Le penon de chute se cache quand le haut est trop fermé (écoute très bordée). */
+const gv = {ch:"centre", e:4};
+const CH_A = {vent:0, centre:4, sousvent:11};      // angle de bôme donné par le chariot
+const CH_X = {vent:-11, centre:0, sousvent:11};    // position du chariot sur le rail
+const CH_NAME = {vent:"au vent", centre:"au centre", sousvent:"sous le vent"};
+const GV_MSG = {
+  vent:{bord:"Bôme dans l'axe et chute fermée : beaucoup de puissance et de cap, mais aussi de gîte. Seulement si le bateau va vite et reste à plat.",
+        mi:"Le réglage du petit temps : bôme près de l'axe, haut un peu ouvert pour que l'air s'échappe.",
+        choq:"Le haut est très ouvert alors que le chariot est au vent : la voile pousse peu. Reborde un peu."},
+  centre:{bord:"Le réglage du médium : bôme dans l'axe, chute tendue, puissance maximale.",
+        mi:"Un peu de dépuissance : bien pour passer une risée, puis reborder.",
+        choq:"Bôme écartée et haut très ouvert : c'est ce qui se passe quand on choque l'écoute dans une rafale."},
+  sousvent:{bord:"Le réglage de la brise : la bôme s'écarte mais la chute reste tendue. Moins de gîte sans perdre de cap.",
+        mi:"Brise forte : dépuissance importante, le bateau reste à plat.",
+        choq:"Dépuissance maximale : pour passer une très grosse rafale, puis reborder dès qu'elle passe."}
+};
+function gvUpdate(){
+  const k = 1.9, cx = 150, cy = 136;
+  const boomA = CH_A[gv.ch] + gv.e * .9, topA = boomA + 3 + gv.e * 1.3;
+  const hidden = gv.e <= 2;                                   // chute trop fermée
+  const L = 60, Lt = 48;
+  const bx = Math.sin(rad(boomA)) * L, by = -16 + Math.cos(rad(boomA)) * L;
+  const tx = Math.sin(rad(topA)) * Lt, ty = -16 + Math.cos(rad(topA)) * Lt;
+  const ax = Math.sin(rad(boomA)) * L * .85, ay = -16 + Math.cos(rad(boomA)) * L * .85;
+  const chx = CH_X[gv.ch];
+  const abs = (x, y) => [r1(cx + x * k), r1(cy + y * k)];
+  const P = abs(tx, ty);
+  let h = arrow(18, 20, 52, 58, "var(--navy)", 3) + arrow(40, 6, 74, 44, "var(--navy)", 3)
+    + `<text x="20" y="74" font-size="12" font-weight="700" fill="var(--navy)">vent</text>`
+    + `<g transform="translate(${cx},${cy}) scale(${k})">
+        <path d="${hullPath()}" fill="var(--surface)" stroke="var(--hull)" stroke-width="1.5"/>
+        <line x1="-14" y1="36" x2="14" y2="36" stroke="var(--hull)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="${sailPath(0, -16, topA, Lt, .1)}" fill="none" stroke="var(--navy)" stroke-width="2" stroke-dasharray="4 3" opacity=".8"/>
+        <path d="${sailPath(0, -16, boomA, L, .1)}" fill="none" stroke="var(--navy)" stroke-width="2.5"/>
+        <line x1="0" y1="-16" x2="${r1(bx)}" y2="${r1(by)}" stroke="var(--hull)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="${r1(ax)}" y1="${r1(ay)}" x2="${chx}" y2="36" stroke="var(--orange-ink)" stroke-width="1.2"/>
+        <rect x="${chx - 3}" y="33.5" width="6" height="5" rx="1.5" fill="var(--orange)"/>
+        <circle cx="0" cy="-16" r="3" fill="var(--hull)"/></g>`;
+  // le penon de chute, au bout du haut de la voile
+  h += hidden
+    ? `<path d="M${P[0]},${P[1]} c8,-2 12,-12 4,-16 c-5,-2 -8,4 -3,6" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/>`
+    : `<g transform="translate(${P[0]},${P[1]}) rotate(${r1(90 - topA)})"><path class="tt wool flow" d="M0,0 q7,-3 14,0 t14,0"/></g>`;
+  const R = abs(14, 36), B = abs(ax, ay);
+  h += tag(255, 232, R[0], R[1], "rail + chariot", "middle")
+     + tag(255, 150, P[0] + 4, P[1], "penon de chute", "middle")
+     + tag(70, 250, B[0] - 2, B[1], "écoute", "middle")
+     + `<text x="150" y="294" font-size="11" fill="var(--muted)" text-anchor="middle">vu d'en haut · trait plein : bas de la voile · pointillés : haut</text>`;
+  $("gvView").innerHTML = h;
+  const cat = gv.e <= 5 ? "bord" : gv.e <= 12 ? "mi" : "choq";
+  const ecoute = {bord:"bordée", mi:"un peu choquée", choq:"choquée"}[cat];
+  $("gvEO").textContent = ecoute;
+  const angle = boomA < 9 ? "Dans l'axe" : boomA < 18 ? "Un peu écartée" : "Écartée";
+  const top = gv.e <= 2 ? "Fermé" : gv.e <= 8 ? "Un peu ouvert" : "Très ouvert";
+  $("gvVerdict").innerHTML = `<span class="chip">Chariot ${CH_NAME[gv.ch]} · écoute ${ecoute}</span>
+    <p class="what">${GV_MSG[gv.ch][cat]}</p>
+    <div class="roles"><div class="role"><b>Bôme</b><p>${angle}</p></div><div class="role"><b>Haut de la voile</b><p>${top}</p></div></div>
+    <p class="note ${hidden ? "trap" : "reg"}"><b>Penon de chute · </b>${hidden ? "caché derrière la voile : la chute est trop fermée, choque un peu l'écoute." : "il flotte vers l'arrière : l'air s'échappe bien par la chute."}</p>`;
+  autolink($("gvVerdict"));
+}
+onSeg("gvCh", "ch", v => { gv.ch = v; gvUpdate(); });
+$("gvE").addEventListener("input", e => { gv.e = +e.target.value; gvUpdate(); });
+
+
+/* ---------- B9. Chapitre 6 : le spi ----------
+   spiSVG dessine le spi vu de l'arrière du bateau, avec ou sans étiquettes.
+     state : "tight" (trop bordé), "curl" (frise : bon réglage), "collapse" (effondré)
+     hgt   : hauteur du tangon (bas / bon / haut) → où le guindant frise en premier */
+const TACK_Y = {bas:282, bon:262, haut:236};
+const CURL_T = {haut:[.14,.34], bon:[.38,.6], bas:[.64,.86]};
+const cubic = (p0, p1, p2, p3, t) => { const u = 1 - t;
+  return [u*u*u*p0[0] + 3*u*u*t*p1[0] + 3*u*t*t*p2[0] + t*t*t*p3[0], u*u*u*p0[1] + 3*u*u*t*p1[1] + 3*u*t*t*p2[1] + t*t*t*p3[1]]; };
+
+function spiSVG(state, hgt, labels){
+  const ty = TACK_Y[hgt], H = [170, 26], T = [80, ty], C = [260, 262];
+  const lc1 = state === "tight" ? [100, 62] : [78, 62], lc2 = state === "tight" ? [80, 190] : [50, 190];
+  let luff = `C${lc1} ${lc2} ${T}`;
+  if (state === "collapse") luff = `C120,80 178,170 ${T}`;
+  const rc1 = state === "tight" ? [262, 190] : [290, 190], rc2 = state === "tight" ? [244, 62] : [266, 62];
+  let h = `<path d="M110,330 L230,330 L214,352 L126,352 Z" fill="var(--surface)" stroke="var(--hull)" stroke-width="2"/>`
+        + `<line x1="170" y1="18" x2="170" y2="330" stroke="var(--hull)" stroke-width="5"/>`
+        + `<path d="M${H} ${luff} Q170,${ty + 28} ${C} C${rc1} ${rc2} ${H} Z" fill="var(--sail)" stroke="var(--navy)" stroke-width="2.5"/>`;
+  if (state === "curl"){
+    const [t1, t2] = CURL_T[hgt], tm = (t1 + t2) / 2;
+    const P1 = cubic(H, lc1, lc2, T, t1), P2 = cubic(H, lc1, lc2, T, t2), Pm = cubic(H, lc1, lc2, T, tm);
+    h += `<path class="flap" d="M${r1(P1[0])},${r1(P1[1])} Q${r1(Pm[0] + 58)},${r1(Pm[1])} ${r1(P2[0])},${r1(P2[1])} Q${r1(Pm[0] + 20)},${r1(Pm[1])} ${r1(P1[0])},${r1(P1[1])} Z" fill="var(--orange)" opacity=".9"/>`;
+    if (labels) h += `<text x="${r1(Pm[0] + 56)}" y="${r1(Pm[1] + 4)}" font-size="12" font-weight="700" fill="var(--orange-ink)">ça frise ici</text>`;
+  }
+  if (state === "collapse") h += `<text x="215" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="var(--bad)">effondré</text>`;
+  if (state === "tight") h += `<text x="170" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="var(--muted)">« étranglé »</text>`;
+  h += `<line x1="170" y1="${ty + 22}" x2="80" y2="${ty}" stroke="var(--orange)" stroke-width="5" stroke-linecap="round"/>`
+     + `<circle cx="80" cy="${ty}" r="5" fill="var(--navy)"/><circle cx="260" cy="262" r="5" fill="var(--navy)"/>`;
+  if (labels){
+    const G = cubic(H, lc1, lc2, T, .5);
+    h += `<line x1="20" y1="262" x2="320" y2="262" stroke="var(--muted)" stroke-dasharray="3 4" opacity=".7"/>`
+       + tag(225, 20, 172, 28, "tête")
+       + tag(30, 120, r1(G[0]), r1(G[1]), "guindant", "middle")
+       + tag(305, 120, 286, 140, "chute", "middle")
+       + tag(48, ty + 40, 80, ty + 2, "point d'amure", "middle")
+       + tag(280, 300, 260, 264, "point d'écoute", "middle")
+       + tag(112, ty + 50, 125, ty + 12, "tangon", "middle")
+       + `<text x="170" y="368" font-size="11" fill="var(--muted)" text-anchor="middle">vu de l'arrière du bateau</text>`;
+  }
+  return h;
+}
+$("curlFigs").innerHTML = [
+  ["tight", "<b>Trop bordé.</b> Le bord au vent du spi reste tendu, il ne bouge jamais. Le spi est « étranglé » : il pousse moins et fait gîter. → Choque."],
+  ["curl", "<b>Ça frise : c'est réglé !</b> Le bord au vent (le guindant) commence à se replier sur quelques centimètres, comme une feuille de papier qui s'enroule. → Reprends juste un peu, puis rechoque."],
+  ["collapse", "<b>Trop choqué.</b> Le bord se replie complètement et le spi se vide d'un coup. → Reborde vite."]
+].map(([s, cap]) => `<figure class="figbox"><svg viewBox="0 0 340 360" role="img" aria-label="Spi">${spiSVG(s, "bon", false)}</svg><figcaption>${cap}</figcaption></figure>`).join("");
+
+const spi = {sh:60, h:"bon", p:"perp"};
+const SPI_ZONE = {avant:[62,80], perp:[52,70], arriere:[42,56]};  // [début du frisé, effondrement]
+function spiUpdate(){
+  const [lo, hi] = SPI_ZONE[spi.p];
+  const state = spi.sh < lo ? "tight" : spi.sh <= hi ? "curl" : "collapse";
+  $("spiView").innerHTML = spiSVG(state, spi.h, true);
+  $("sShO").textContent = state === "tight" ? "trop bordée" : state === "curl" ? "juste" : "trop choquée";
+  let ok = false, msg;
+  if (state === "tight") msg = "Le guindant ne frise jamais : le spi est trop bordé. Il pousse moins et fait gîter. Choque jusqu'à voir le guindant friser.";
+  else if (state === "collapse") msg = "Trop choqué : le guindant s'est replié complètement et le spi s'effondre. Reborde vite et franchement, puis rechoque doucement.";
+  else if (spi.h === "bon"){ ok = spi.p === "perp"; msg = "Le guindant frise légèrement vers le milieu : c'est le bon réglage. Continue de jouer l'écoute."; }
+  else if (spi.h === "haut") msg = "Le guindant frise d'abord en haut : le tangon est trop haut. Baisse-le.";
+  else msg = "Le guindant frise d'abord en bas : le tangon est trop bas. Monte-le.";
+  let pole = "";
+  if (spi.p === "avant") pole = `<p class="note trap"><b>Tangon · </b>trop en avant : le spi se cache derrière la grand-voile et pousse moins. Borde le bras pour le reculer.</p>`;
+  if (spi.p === "arriere") pole = `<p class="note trap"><b>Tangon · </b>trop en arrière : le spi est instable, la zone de bon réglage est minuscule. Choque le bras pour l'avancer.</p>`;
+  if (spi.h !== "bon") pole += `<p class="note reg"><b>Hauteur · </b>regarde les deux coins du bas du spi : ils ne sont pas à la même hauteur (ligne pointillée).</p>`;
+  $("sVerdict").innerHTML = `<span class="chip ${ok ? "ok" : "bad"}">${ok ? "✓ Réglé" : "À corriger"}</span><p class="what">${msg}</p>${pole}`;
+}
+$("sSh").addEventListener("input", e => { spi.sh = +e.target.value; spiUpdate(); });
+onSeg("sHeight", "h", v => { spi.h = v; spiUpdate(); });
+onSeg("sPole", "p", v => { spi.p = v; spiUpdate(); });
+
+
+/* ---------- B10. Chapitre 7 : les commandes + filtre ---------- */
+$("cmds").innerHTML = CMD.map(c => `
+  <article class="cmd" data-v="${c.v}">
+    <div class="top"><h3>${c.n}</h3><div class="tags"><span class="chip">${c.who}</span>${c.opt ? `<span class="chip opt">Selon le bateau</span>` : ""}</div></div>
+    <p>${c.role}</p>
+    ${c.fig ? mini(c.fig[0], c.fig[1], c.fig[2]) : ""}
+    <div class="duo"><div><b>${c.aL}</b>${c.a}</div><div><b>${c.bL}</b>${c.b}</div></div>
+    <p class="note reg"><b>Quand · </b>${c.when}</p>
+    <p class="note trap"><b>Piège · </b>${c.trap}</p>
+  </article>`).join("");
+onSeg("cmdFilter", "f", f => {
+  document.querySelectorAll(".cmd").forEach(c => { c.hidden = f !== "all" && c.dataset.v !== f; });
+});
+
+
+/* ---------- B11. Chapitre 8 : le tableau de bord ---------- */
+const board = {a:"pres", v:"med"};
+function allureFig(){
+  const A = ALL[board.a];
+  let sails = `<path d="${sailPath(0, -16, A.m, 56, .1)}" fill="none" stroke="var(--hull)" stroke-width="3.5" stroke-linecap="round"/>`
+            + `<path d="${sailPath(0, -56, A.j, 40, .1)}" fill="none" stroke="var(--navy)" stroke-width="3" stroke-linecap="round" ${A.spi ? 'opacity=".45"' : ""}/>`;
+  if (A.spi){
+    const px = r1(42 * Math.cos(rad(A.wa))), py = r1(-16 - 42 * Math.sin(rad(A.wa)));
+    sails += `<line x1="0" y1="-16" x2="${px}" y2="${py}" stroke="var(--orange)" stroke-width="3.5" stroke-linecap="round"/>`
+           + `<path d="M${px},${py} C${px - 8},-98 52,-98 40,-34" fill="var(--orange-soft)" stroke="var(--orange)" stroke-width="3"/>`;
+  }
+  $("allureFig").innerHTML = windArrow(110, 6, 34) + windArrow(150, 6, 34) + windArrow(190, 6, 34)
+    + `<text x="150" y="58" text-anchor="middle" font-size="12" fill="var(--muted)">vent</text>`
+    + `<g transform="translate(150,160) rotate(${A.wa}) scale(1.35)"><path d="${hullPath()}" fill="var(--surface)" stroke="var(--hull)" stroke-width="2"/>${sails}<circle cx="0" cy="-16" r="3.5" fill="var(--hull)"/></g>`;
+  $("allureCap").textContent = `${A.n} · ${VENT[board.v]} · bateau vu d'en haut, environ ${A.wa}° du vent apparent.`;
+}
+const gauge = n => `<span class="gauge" aria-label="niveau ${n} sur 4">${[0,1,2,3,4].map(i => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</span>`;
+function boardUpdate(){
+  allureFig();
+  $("settings").innerHTML = MAT[board.a][board.v].map(([k, lvl, val, tip]) => `
+    <div class="set"><span class="k">${k}</span><span class="v">${lvl == null ? "" : gauge(lvl)}${val}</span>${tip ? `<span class="tip">${tip}</span>` : ""}</div>`).join("");
+  autolink($("settings"));
+}
+onSeg("pickAllure", "a", v => { board.a = v; boardUpdate(); });
+onSeg("pickVent", "v", v => { board.v = v; boardUpdate(); });
+
+
+/* ---------- B12. Chapitre 9 : les symptômes ---------- */
+$("sympt").innerHTML = SYMPT.map(s => `
+  <details><summary>${s.t}</summary><div class="sbody">
+    <p>${s.s}</p><p class="note reg"><b>Pourquoi · </b>${s.why}</p>
+    <ol>${s.do.map(d => `<li>${d}</li>`).join("")}</ol></div></details>`).join("");
+
+
+/* ---------- B13. Chapitre 10 : le quiz ----------
+   Les bases d'abord (lvl 0), puis les finesses (lvl 1), chacune mélangée. */
+const box = $("quizBox");
+let qs = [], qi = 0, score = 0;
+function startQuiz(){
+  qs = shuffle(Q.filter(q => q.lvl === 0)).concat(shuffle(Q.filter(q => q.lvl === 1)))
+    .map(q => { const order = shuffle(q.a.map((_, i) => i)); return { ...q, a: order.map(i => q.a[i]), ok: order.indexOf(0) }; });
+  qi = 0; score = 0; renderQ();
+}
+function renderQ(){
+  if (qi >= qs.length) return renderEnd();
+  const q = qs[qi];
+  box.innerHTML = `
+    <div class="qbar"><span>Question ${qi + 1} / ${qs.length}</span><div class="progress"><i style="width:${qi / qs.length * 100}%"></i></div><span id="qscore">Score : ${score}</span></div>
+    <p class="qtext">${q.q}</p>
+    <div class="answers">${q.a.map((t, i) => `<button class="ans" data-a="${i}">${t}</button>`).join("")}</div>
+    <div id="after"></div>`;
+}
+function renderEnd(){
+  const pct = score / qs.length;
+  const msg = pct === 1 ? "Parfait. Tu peux régler n'importe quel bateau du club !"
+            : pct >= 0.7 ? "Très bien. Repasse sur les points manqués et tu seras prêt."
+            : "Pas encore ça. Rejoue avec les simulateurs, puis réessaie.";
+  box.innerHTML = `<div class="result"><p class="eyebrow">Résultat</p><p class="score">${score} / ${qs.length}</p><p>${msg}</p>
+    <div class="actions"><button class="btn solid" data-quiz="again">Recommencer</button><a class="btn" href="#sommaire">Revoir le sommaire</a></div></div>`;
+}
+box.addEventListener("click", e => {
+  if (e.target.closest('[data-quiz="again"]')) { startQuiz(); return; }
+  if (e.target.closest('[data-quiz="next"]')) { qi++; renderQ(); return; }
+  const b = e.target.closest(".ans");
+  if (!b || b.disabled) return;
+  const q = qs[qi], pick = Number(b.dataset.a), good = pick === q.ok;
+  if (good) score++;
+  box.querySelectorAll(".ans").forEach((x, i) => {
+    x.disabled = true;
+    if (i === q.ok) x.classList.add("good"); else if (i === pick) x.classList.add("bad");
+  });
+  $("after").innerHTML = `<div class="after"><p class="explain"><b>${good ? "Bonne réponse. " : "Pas tout à fait. "}</b>${q.x}</p>
+    <div><button class="btn solid" data-quiz="next">${qi === qs.length - 1 ? "Voir mon score" : "Question suivante →"}</button></div></div>`;
+  autolink($("after"));
+  $("qscore").textContent = "Score : " + score;
+});
+
+
+/* ---------- B14. Démarrage ---------- */
+hbUpdate();
+jibUpdate();
+gvUpdate();
+spiUpdate();
+boardUpdate();
+startQuiz();
+// Mots du lexique soulignés dans les textes fixes et les cartes
+document.querySelectorAll(".lead, .note, .concept p, .sign, .cmd > p, .duo div, .sbody, .ess, .mbody, .power div, .mnemo p, .figbox figcaption")
+  .forEach(autolink);
+</script>
+</body>
+</html>
