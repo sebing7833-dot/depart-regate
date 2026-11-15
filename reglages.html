@@ -362,18 +362,18 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
   <p class="lead">Toutes les commandes agissent sur trois choses seulement. Les petits schémas montrent la voile vue d'en haut : le mât est le point gris, le vent arrive par le haut.</p>
   <div class="cols">
     <div class="concept"><span class="num">1 · L'angle</span><h3>Border ou choquer</h3><div id="fig-angle"></div>
-      <p>L'angle entre la voile et le vent. Trop bordée, la voile décroche et freine ; trop choquée, elle fasseye. Se règle à l'écoute, au chariot de GV, au bras du spi.</p></div>
+      <p>L'angle entre la voile et le vent. Trop bordée, la voile décroche et freine ; trop choquée, elle fasseye. Chaque voile a sa commande : l'écoute de foc pour le foc ; l'écoute et le chariot pour la grand-voile ; l'écoute de spi et le bras (le tangon) pour le spi.</p></div>
     <div class="concept"><span class="num">2 · Le creux</span><h3>Voile plate ou creuse</h3><div id="fig-depth"></div>
-      <p>Une voile creuse est puissante (petit temps) ; une voile plate gîte moins (brise). Se règle à la bordure, au cunningham, à la drisse.</p></div>
+      <p>Une voile creuse est puissante : c'est le réglage du médium. Une voile plate convient au petit temps (dans très peu de vent, l'air n'arrive pas à suivre une voile trop creuse) et à la brise (elle gîte moins). Se règle à la bordure, au cunningham, à la drisse.</p></div>
     <div class="concept"><span class="num">3 · Le vrillage</span><h3>Le haut ouvert ou fermé</h3><div id="fig-twist"></div>
       <p>Le haut de la voile (pointillés) s'ouvre plus que le bas. Plus il s'ouvre, moins la voile pousse et fait gîter. Se règle à l'écoute, au hale-bas, au point de tire du foc.</p></div>
   </div>
 
   <h3>Puissance ou dépuissance : la logique selon le vent</h3>
   <div class="power">
-    <div><span class="lv">Petit temps</span><b>Puissance, mais souple</b>Voiles un peu creuses, un peu choquées, haut légèrement ouvert pour que l'air s'écoule malgré le peu de vent.</div>
-    <div><span class="lv">Médium</span><b>Puissance maximale</b>Tout est bordé et tendu juste ce qu'il faut. L'équipage au rappel garde le bateau à plat.</div>
-    <div><span class="lv">Brise</span><b>Dépuissance</b>Voiles plates, haut ouvert, on choque dans les rafales. Le but : garder le bateau à plat plutôt que de le laisser gîter.</div>
+    <div><span class="lv">Petit temps</span><b>Voiles plates</b>Dans très peu de vent, l'air n'arrive pas à suivre une voile trop creuse : on garde les voiles plutôt plates, un peu choquées, le haut légèrement ouvert.</div>
+    <div><span class="lv">Médium</span><b>Voiles creuses</b>Le vent est assez fort pour suivre une voile creuse : c'est la puissance maximale. L'équipage au rappel garde le bateau à plat.</div>
+    <div><span class="lv">Brise</span><b>Voiles plates</b>Dépuissance : voiles plates, haut ouvert, on choque dans les rafales. Le but : garder le bateau à plat plutôt que de le laisser gîter.</div>
   </div>
 
   <h3>Les indicateurs à surveiller</h3>
@@ -386,7 +386,7 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
   </div>
   <div class="more"><b>En détail</b><div class="mbody">
     <ul>
-      <li><b>Le vent apparent bouge tout le temps.</b> Quand une risée arrive, le vent apparent recule (il vient plus de l'arrière) : au près tu peux lofer, et les voiles peuvent être un peu choquées. Quand le bateau accélère ensuite, le vent apparent revient vers l'avant : reborde.</li>
+      <li><b>Le vent apparent bouge tout le temps.</b> Quand une risée arrive, le bateau accélère : le vent apparent refuse (il revient vers l'avant). Les premières secondes, abats un peu pour garder les penons qui filent. Une fois la vitesse stabilisée, tu peux lofer et gagner au vent.</li>
       <li><b>La puissance se gère dans l'ordre.</b> Quand le vent monte : d'abord le rappel, puis le cunningham, la bordure et le hale-bas, puis le chariot, et enfin l'écoute choquée dans les rafales.</li>
       <li><b>Un bateau à plat va plus vite.</b> La gîte fait déraper le bateau et le rend ardent : le safran freine pour tenir le cap.</li>
     </ul></div></div>
@@ -400,7 +400,7 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
   <p class="lead">Un brin de laine attaché sur chaque hauban, à hauteur d'yeux. Il flotte dans le sens où va le vent, comme une petite manche à air. C'est l'indicateur le plus simple du bateau, et le premier à regarder.</p>
   <div class="ess"><b>À retenir</b><ul>
     <li>Le penon pointe vers l'arrière au près, sur le côté au travers, vers l'avant au portant.</li>
-    <li>Il montre le vent apparent : celui que ressent le bateau en mouvement.</li>
+    <li>Il montre le vent apparent, pas le vent réel : il prend aussi le vent créé par la vitesse du bateau.</li>
     <li>Au vent arrière, si le vent arrive du côté de la bôme : danger d'empannage.</li></ul></div>
   <p class="hint"><span class="tap" aria-hidden="true">☝</span>Fais tourner le vent autour du bateau et regarde le penon (en orange, sur les haubans).</p>
   <div class="panel sim">
@@ -414,13 +414,14 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
   </div>
   <div class="cols">
     <p class="note reg"><b>Au près · </b>le penon donne l'angle au vent. S'il remonte vers l'avant sans que tu aies touché la barre, le vent a tourné vers l'avant (refusante) : abats. S'il recule (adonnante) : tu peux lofer.</p>
+    <p class="note reg"><b>Vent apparent, pas vent réel · </b>les penons, sur le hauban comme sur les voiles, s'alignent sur le vent apparent : le vent réel plus le vent créé par la vitesse du bateau. Au près, ils montrent donc un vent plus de face que le vent réel. Au vent arrière, le vent apparent est faible (vent réel moins la vitesse du bateau) : si le bateau va presque aussi vite que le vent, les penons pendent vers le bas.</p>
     <p class="note reg"><b>Sous spi · </b>le tangon se règle perpendiculaire au penon de hauban. C'est le repère le plus fiable de l'équipier.</p>
     <p class="note trap"><b>Piège · </b>le penon mouillé colle au hauban et ne montre plus rien. Utilise de la laine légère, ou une bande de ruban fin, et remplace-la souvent.</p>
   </div>
   <div class="more"><b>En détail</b><div class="mbody">
     <ul>
       <li><b>Penon de hauban et girouette.</b> Si le bateau a une girouette en tête de mât, elle voit le vent plus haut, où il est souvent plus fort et un peu plus à droite ou à gauche : les deux peuvent différer légèrement.</li>
-      <li><b>Dans une risée, le penon recule</b> (le vent apparent vient plus de l'arrière) ; dans une molle, il avance. Au portant, cela aide à jouer : abats dans la risée, lofe dans la molle.</li>
+      <li><b>Dans une risée, le bateau accélère et le penon avance</b> : le vent apparent refuse. Abats les premières secondes, puis lofe quand la vitesse est stabilisée. Au portant aussi : abats dans la risée, lofe dans la molle.</li>
       <li><b>Le vent apparent avance quand le bateau accélère.</b> Un bateau rapide au portant a son vent apparent bien plus sur l'avant que le vent réel.</li>
     </ul></div></div>
 </section>
@@ -464,8 +465,8 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
         <div class="ends"><span>← bordée</span><span>choquée →</span></div></div>
       <div class="ctrl"><span class="lbl">Équipier : point de tire <small>le bon réglage dépend du vent</small></span>
         <div class="seg" id="jLead">
-          <button class="btn" data-lead="avant" aria-pressed="false">Avancé</button>
-          <button class="btn" data-lead="centre" aria-pressed="true">Au milieu</button>
+          <button class="btn" data-lead="avant" aria-pressed="true">Avancé</button>
+          <button class="btn" data-lead="centre" aria-pressed="false">Au milieu</button>
           <button class="btn" data-lead="arriere" aria-pressed="false">Reculé</button>
         </div></div>
       <div class="verdict" id="jVerdict" aria-live="polite"></div>
@@ -474,7 +475,7 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
   <div class="mnemo"><span class="big" aria-hidden="true">🧶</span><div><strong>Pour le barreur : « la barre va vers le penon qui décroche ».</strong>
     <p>Penon vert (côté au vent) qui s'agite → tu pousses la barre côté au vent, le bateau abat. Penon rouge (côté sous le vent) qui décroche → barre côté sous le vent, le bateau lofe. Pour l'équipier : vert qui se lève → border ; rouge qui décroche → choquer.</p></div></div>
   <div class="cols">
-    <p class="note club"><b>Le point de tire selon le vent · </b><b>petit temps</b> : avancé, pour du creux et de la puissance en bas du foc. <b>Médium</b> : au milieu, les trois penons verts se lèvent ensemble quand tu lofes. <b>Brise</b> : reculé, le haut du foc s'ouvre pour dépuissancer ; le penon vert du haut se lève alors un peu avant les autres, c'est voulu.</p>
+    <p class="note club"><b>Le point de tire selon le vent · </b><b>petit temps</b> : au milieu, le foc reste plutôt plat (l'air colle mieux) et on choque un peu l'écoute pour ouvrir le haut. <b>Médium</b> : un peu avancé, pour du creux et de la puissance ; les trois penons verts se lèvent ensemble quand tu lofes. <b>Brise</b> : reculé, le haut du foc s'ouvre pour dépuissancer ; le penon vert du haut se lève alors un peu avant les autres, c'est voulu.</p>
     <p class="note reg"><b>Les couleurs · </b>sur cette page, vert = intrados et rouge = extrados. Sur ton bateau, les penons peuvent être d'une autre couleur : ce qui compte, c'est le côté de la voile où ils sont collés.</p>
   </div>
   <div class="more"><b>En détail</b><div class="mbody">
@@ -517,7 +518,7 @@ footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padd
     </div>
   </div>
   <div class="cols">
-    <p class="note reg"><b>Petit temps · </b>chariot au vent, écoute un peu choquée : la bôme reste près de l'axe, mais le haut s'ouvre pour laisser l'air s'échapper.</p>
+    <p class="note reg"><b>Petit temps · </b>chariot au vent, écoute un peu choquée : la bôme reste près de l'axe, mais le haut s'ouvre pour laisser l'air s'échapper. Bordure tendue : voile plutôt plate.</p>
     <p class="note reg"><b>Médium · </b>chariot au centre, écoute bordée : bôme dans l'axe, penon de chute qui flotte la plupart du temps.</p>
     <p class="note reg"><b>Brise · </b>chariot sous le vent, écoute bordée : la bôme s'écarte mais la chute reste tendue. Dans une rafale, on descend encore le chariot ou on choque l'écoute.</p>
   </div>
@@ -734,9 +735,9 @@ const CMD = [
    fig:["angle","bordée","choquée"]},
   {v:"foc", n:"Point de tire du foc", who:"Équipier", opt:true,
    role:"L'endroit où l'écoute arrive sur le pont (chariot sur rail ou barber). Il répartit la tension entre le bas et le haut du foc.",
-   aL:"Avancé", a:"Le haut se ferme, le bas se creuse : plus de puissance. Pour le petit temps et les allures débridées.",
+   aL:"Avancé", a:"Le haut se ferme, le bas se creuse : plus de puissance. Pour le médium et les allures débridées.",
    bL:"Reculé", b:"Le haut s'ouvre, le bas s'aplatit : dépuissance. Pour la brise.",
-   when:"À chaque changement de force du vent : avancé dans le petit temps, au milieu dans le médium, reculé dans la brise.",
+   when:"À chaque changement de force du vent : au milieu dans le petit temps (foc plutôt plat), un peu avancé dans le médium (du creux), reculé dans la brise.",
    trap:"Le régler une fois au ponton et ne plus y toucher : il n'y a pas « une » bonne position, elle dépend du vent.",
    fig:["twist","avancé : haut fermé","reculé : haut ouvert"]},
   {v:"foc", n:"Drisse de foc", who:"Équipier", opt:true,
@@ -777,8 +778,8 @@ const CMD = [
   {v:"gv", n:"Bordure de grand-voile", who:"Équipier", opt:true,
    role:"Tend le bas de la grand-voile le long de la bôme.",
    aL:"Tendue", a:"Le bas de la voile s'aplatit : moins de puissance, plus de cap.",
-   bL:"Relâchée", b:"Le bas se creuse : plus de puissance (petit temps, allures portantes).",
-   when:"Tendue au près dans le médium et la brise. Relâchée aux allures portantes.",
+   bL:"Relâchée", b:"Le bas se creuse : plus de puissance (médium, allures portantes).",
+   when:"Au près : tendue dans le petit temps et dans la brise (voile plate), un peu relâchée dans le médium (du creux). Relâchée aux allures portantes.",
    trap:"La laisser tendue à fond au portant : la voile est plate là où elle devrait pousser.",
    fig:["depth","tendue : plate","relâchée : creuse"]},
   {v:"spi", n:"Bras et tangon", who:"Équipier",
@@ -825,23 +826,23 @@ const VENT = {pt:"Petit temps", med:"Médium", brise:"Brise"};
 const MAT = {
   pres:{
     pt:[
-      ["Écoute de foc",2,"Légèrement choquée","Le foc garde du creux et s'ouvre un peu en haut : il relance mieux le bateau."],
-      ["Point de tire",null,"Avancé","Plus de creux en bas du foc, pour la puissance."],
+      ["Écoute de foc",2,"Légèrement choquée","Le haut du foc s'ouvre un peu : l'air s'écoule malgré le peu de vent."],
+      ["Point de tire",null,"Au milieu","Le foc reste plutôt plat : dans peu de vent, l'air colle mieux à une voile plate."],
       ["Écoute de GV",2,"Bordée sans écraser","Le penon de chute du haut de la GV doit flotter une bonne partie du temps."],
       ["Chariot de GV",null,"Au vent","Il ramène la bôme vers l'axe sans fermer la chute."],
       ["Hale-bas",0,"Mou","Laisse la voile vriller : dans le petit temps, l'air doit pouvoir s'échapper par le haut."],
       ["Cunningham",0,"Relâché","Quelques petits plis au guindant ne sont pas graves."],
-      ["Bordure",2,"Un peu relâchée","Plus de creux en bas de la GV."],
+      ["Bordure",3,"Tendue","Voile plutôt plate : dans peu de vent, l'air n'arrive pas à suivre une voile trop creuse."],
       ["Équipage",null,"En avant, un peu sous le vent","Une légère gîte aide les voiles à prendre leur forme et donne des sensations à la barre."],
       ["Barre",null,"La vitesse d'abord","Abats un peu pour accélérer, puis remonte doucement. Gestes de barre très doux."]],
     med:[
       ["Écoute de foc",3,"Bordée","Les six penons filent ensemble."],
-      ["Point de tire",null,"Au milieu","En lofant, les trois penons verts se lèvent ensemble."],
+      ["Point de tire",null,"Un peu avancé","Du creux en bas du foc pour la puissance. En lofant, les trois penons verts se lèvent ensemble."],
       ["Écoute de GV",3,"Bordée","Bôme près de l'axe, penon de chute qui flotte la plupart du temps."],
       ["Chariot de GV",null,"Au centre","Bôme dans l'axe du bateau."],
       ["Hale-bas",2,"Juste repris","Il retient la bôme quand tu choques dans une risée."],
       ["Cunningham",1,"Juste tendu","Il efface les plis du guindant, pas plus."],
-      ["Bordure",3,"Tendue","La GV s'aplatit en bas, le bateau remonte mieux."],
+      ["Bordure",2,"Mi-tendue","Du creux en bas de la GV : c'est le vent où la voile peut être la plus puissante."],
       ["Équipage",null,"Au rappel, bateau à plat","Une gîte modérée et constante : c'est le moteur du près."],
       ["Barre",null,"Suis les penons","Lofe quand le vent adonne, abats quand il refuse, pour garder les penons qui filent."]],
     brise:[
@@ -863,7 +864,7 @@ const MAT = {
       ["Chariot de GV",null,"Sous le vent","En bout de rail."],
       ["Hale-bas",1,"Légèrement repris","L'écoute tire maintenant vers l'extérieur : c'est le hale-bas qui tient la chute."],
       ["Cunningham",0,"Relâché","Garde tout le creux."],
-      ["Bordure",1,"Relâchée","Plus de creux = plus de puissance aux allures débridées."],
+      ["Bordure",2,"Mi-tendue","Dans peu de vent, la voile reste plutôt plate pour que l'air colle."],
       ["Équipage",null,"Au centre, en avant","Le bateau à plat ou très légèrement gîté."],
       ["Barre",null,"Suis le vent","Lofe un peu dans les molles pour garder de la vitesse."]],
     med:[
@@ -933,7 +934,7 @@ const SYMPT = [
    do:["Barreur : choquer l'écoute de GV au moment où la rafale arrive, reborder quand elle passe.","Lofer très légèrement dans la rafale (au près).","Si c'est permanent : dépuissance générale (cunningham, bordure, point de tire reculé)."]},
   {t:"La barre est molle, le bateau n'accroche pas", s:"Petit temps : aucune sensation, le bateau dérive.",
    why:"Pas assez de gîte et voiles trop plates ou trop bordées.",
-   do:["Équipier en avant et sous le vent pour donner un peu de gîte.","Choquer un peu foc et GV, relâcher la bordure.","Mouvements très doux à la barre et dans le bateau."]},
+   do:["Équipier en avant et sous le vent pour donner un peu de gîte.","Choquer un peu foc et GV pour ouvrir le haut, en gardant des voiles plutôt plates.","Mouvements très doux à la barre et dans le bateau."]},
   {t:"Pas de vitesse au près", s:"Le bateau « plante », il avance moins vite que les autres à cap égal.",
    why:"Trop bordé ou trop près du vent.",
    do:["Barreur : abattre de quelques degrés pour relancer.","Choquer un peu le foc et la GV (penons rouges qui décrochent ?).","Une fois la vitesse revenue, remonter doucement."]},
@@ -998,7 +999,7 @@ const Q = [
    x:"Tangon perpendiculaire au penon de hauban, coins du bas du spi à la même hauteur."},
   {lvl:0, q:"Brise, au près : où mets-tu le point de tire du foc ?",
    a:["Reculé, pour ouvrir le haut du foc","Avancé, pour plus de puissance","Toujours au milieu"],
-   x:"Le point de tire dépend du vent : avancé dans le petit temps, au milieu dans le médium, reculé dans la brise."},
+   x:"Le point de tire dépend du vent : au milieu dans le petit temps, un peu avancé dans le médium, reculé dans la brise."},
   {lvl:0, q:"Au près dans la brise, une grosse rafale couche le bateau. Premier réflexe du barreur ?",
    a:["Choquer l'écoute de GV, puis la reborder après la rafale","Border le foc à fond","Abattre franchement"],
    x:"La GV est l'accélérateur : on la choque dans la rafale. Au près, abattre ferait encore plus gîter."},
@@ -1032,9 +1033,12 @@ const Q = [
   {lvl:1, q:"Au vent arrière dans la brise, le bateau roule de plus en plus. Quelle correction ?",
    a:["Border un peu le spi, tenir son coin bas et garder le hale-bas tendu","Choquer le spi et le hale-bas en grand","Monter le tangon au maximum"],
    x:"Un spi un peu bordé et tenu bas, et une GV dont le haut ne part pas en avant, stabilisent le bateau. Lofer un peu aide aussi."},
-  {lvl:1, q:"Petit temps : le bateau manque de puissance et accélère mal. Quel réglage va dans ce sens ?",
+  {lvl:1, q:"Médium, au près : le bateau manque de puissance et accélère mal. Quel réglage va dans ce sens ?",
    a:["Relâcher un peu la bordure et le cunningham","Tendre le cunningham à fond","Reculer le point de tire du foc"],
-   x:"Des voiles un peu plus creuses donnent de la puissance pour relancer le bateau dans le petit temps."}
+   x:"Le médium est le vent des voiles creuses : un peu de creux en plus donne de la puissance. Dans le petit temps, au contraire, on garde les voiles plutôt plates."},
+  {lvl:0, q:"Dans très peu de vent, comment doivent être les voiles ?",
+   a:["Plutôt plates : l'air n'arrive pas à suivre une voile trop creuse","Le plus creuses possible","Bordées à fond"],
+   x:"Petit temps = voiles plates, médium = voiles creuses (puissance maximale), brise = voiles plates (dépuissance)."}
 ];
 
 
@@ -1239,7 +1243,7 @@ function hbAllure(th){
   if (th < 75)  return ["ok", "Bon plein", "Le penon pointe vers l'arrière et vers l'extérieur. Voiles un peu choquées."];
   if (th < 110) return ["ok", "Travers", "Le penon pointe sur le côté, perpendiculaire au bateau. Voiles choquées à moitié."];
   if (th < 160) return ["ok", "Largue, grand largue", "Le penon pointe vers l'avant, en diagonale. C'est une allure de spi : le tangon se règle perpendiculaire au penon."];
-  if (th <= 180) return ["mid", "Vent arrière", "Le penon pointe vers l'étrave. Allure instable : surveille que le vent ne passe pas du côté de la bôme."];
+  if (th <= 180) return ["mid", "Vent arrière", "Le penon pointe vers l'étrave, mollement : au vent arrière, le vent apparent est faible (le vent réel moins la vitesse du bateau). Si le bateau va presque aussi vite que le vent, il pend même vers le bas. Allure instable : surveille que le vent ne passe pas du côté de la bôme."];
   return ["bad", "Mauvaise panne !", "Le vent arrive du même côté que la bôme : risque d'empannage involontaire. Lofe tout de suite, ou fais un vrai empannage contrôlé."];
 }
 function hbUpdate(){
@@ -1314,14 +1318,14 @@ $("flowFigs").innerHTML = flowPanel("ok") + flowPanel("lift") + flowPanel("stall
      - au-dessus de 19° : le penon d'EXTRADOS (rouge) décroche
      - en dessous de 3° : le foc fasseye
    Le point de tire décale l'angle entre le haut et le bas du foc. Le bon
-   point de tire dépend du vent : avancé (petit temps), milieu (médium),
+   point de tire dépend du vent : milieu (petit temps, foc plat), avancé (médium, du creux),
    reculé (brise, où un haut un peu ouvert est voulu). */
 const LEAD = {avant:-5, centre:0, arriere:5};
 const LEAD_NAME = {avant:"avancé", centre:"au milieu", arriere:"reculé"};
-const IDEAL = {pt:"avant", med:"centre", brise:"arriere"};
-const WHY = {pt:"du creux en bas du foc pour la puissance", med:"les trois penons verts se lèvent ensemble", brise:"le haut du foc s'ouvre pour dépuissancer"};
+const IDEAL = {pt:"centre", med:"avant", brise:"arriere"};
+const WHY = {pt:"le foc reste plutôt plat, l'air colle mieux dans peu de vent", med:"du creux en bas du foc pour la puissance maximale", brise:"le haut du foc s'ouvre pour dépuissancer"};
 const HEIGHTS = [{n:"haut", f:.24, h:1}, {n:"milieu", f:.5, h:.5}, {n:"bas", f:.76, h:0}];
-const jib = {wa:32, sh:18, lead:"centre", wind:"med"};
+const jib = {wa:32, sh:18, lead:"avant", wind:"med"};
 
 function jibTop(){
   const g = `<g transform="translate(90,120) rotate(${jib.wa})">
